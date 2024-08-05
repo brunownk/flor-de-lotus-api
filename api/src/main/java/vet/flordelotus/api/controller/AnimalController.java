@@ -1,100 +1,67 @@
 package vet.flordelotus.api.controller;
 
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import vet.flordelotus.api.domain.animal.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.util.UriComponentsBuilder;
+import vet.flordelotus.api.domain.dto.CreateAnimalDTO;
+import vet.flordelotus.api.domain.dto.DetailAnimalDTO;
+import vet.flordelotus.api.domain.dto.ListAnimalDTO;
+import vet.flordelotus.api.domain.dto.UpdateAnimalDTO;
+import vet.flordelotus.api.domain.entity.Animal;
+import vet.flordelotus.api.domain.repository.AnimalRepository;
 
 @RestController
-@RequestMapping("/api/animals")
+@RequestMapping("animals")
 public class AnimalController {
 
     @Autowired
-    private AnimalRepository animalRepository;
+    private AnimalRepository repository;
 
-    @Autowired
-    private AnimalBreedRepository animalBreedRepository;
+    @PostMapping
+    @Transactional
+    public ResponseEntity createAnimal(@RequestBody @Valid CreateAnimalDTO dados, UriComponentsBuilder uriBuilder) {
+        var animal = new Animal(dados);
+        repository.save(animal);
+
+        var uri = uriBuilder.path("/animal/{id}").buildAndExpand(animal.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(new DetailAnimalDTO(animal));
+    }
 
     @GetMapping
-    public List<DadosListagemAnimal> getAllAnimals() {
-        return animalRepository.findAll().stream()
-                .map(this::toDadosListagem)
-                .collect(Collectors.toList());
+    public ResponseEntity<Page<ListAnimalDTO>> listAnimals(Pageable paginacao) {
+        var page = repository.findAll(paginacao).map(ListAnimalDTO::new);
+
+        return ResponseEntity.ok(page);
+    }
+
+    @PutMapping
+    @Transactional
+    public ResponseEntity updateAnimal(@RequestBody @Valid UpdateAnimalDTO dados) {
+        var animal = repository.getReferenceById(dados.id());
+        animal.updateInformations(dados);
+
+        return ResponseEntity.ok(new DetailAnimalDTO(animal));
+    }
+
+   @DeleteMapping("/{id}")
+   @Transactional
+    public ResponseEntity deleteAnimal(@PathVariable Long id) {
+        var animal = repository.getReferenceById(id);
+        animal.delete();
+
+       return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DadosDetalhamentoAnimal> getAnimalById(@PathVariable Long id) {
-        return animalRepository.findById(id)
-                .map(this::toDadosDetalhamento)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public ResponseEntity<DadosDetalhamentoAnimal> createAnimal(@RequestBody @Valid DadosCadastroAnimal dadosCadastro) {
-        Animal animal = toEntity(dadosCadastro);
-        Animal savedAnimal = animalRepository.save(animal);
-        return ResponseEntity.ok(toDadosDetalhamento(savedAnimal));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<DadosDetalhamentoAnimal> updateAnimal(@PathVariable Long id, @RequestBody @Valid DadosAtualizacaoAnimal dadosAtualizacao) {
-        return animalRepository.findById(id)
-                .map(existingAnimal -> {
-                    existingAnimal.setName(dadosAtualizacao.name());
-                    existingAnimal.setBreed(animalBreedRepository.findById(dadosAtualizacao.breedId()).orElse(null));
-                    existingAnimal.setOwnerId(dadosAtualizacao.ownerId());
-                    existingAnimal.setDeletedAt(dadosAtualizacao.deletedAt());
-                    existingAnimal.setDeletedById(dadosAtualizacao.deletedById());
-                    Animal updatedAnimal = animalRepository.save(existingAnimal);
-                    return ResponseEntity.ok(toDadosDetalhamento(updatedAnimal));
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteAnimal(@PathVariable Long id) {
-        return animalRepository.findById(id)
-                .map(animal -> {
-                    animalRepository.delete(animal);
-                    return ResponseEntity.ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    private DadosListagemAnimal toDadosListagem(Animal animal) {
-        String breedName = animal.getBreed() != null ? animal.getBreed().getName() : null;
-        return new DadosListagemAnimal(
-                animal.getId(),
-                animal.getName(),
-                breedName
-        );
-    }
-
-    private DadosDetalhamentoAnimal toDadosDetalhamento(Animal animal) {
-        return new DadosDetalhamentoAnimal(
-                animal.getId(),
-                animal.getName(),
-                animal.getBreed() != null ? animal.getBreed().getId() : null,
-                animal.getOwnerId(),
-                animal.getCreatedAt(),
-                animal.getDeletedAt(),
-                animal.getCreatedById(),
-                animal.getDeletedById()
-        );
-    }
-
-    private Animal toEntity(DadosCadastroAnimal dadosCadastro) {
-        Animal animal = new Animal();
-        animal.setName(dadosCadastro.name());
-        animal.setBreed(animalBreedRepository.findById(dadosCadastro.breedId()).orElse(null));
-        animal.setOwnerId(dadosCadastro.ownerId());
-        animal.setCreatedById(dadosCadastro.createdById());
-        animal.setCreatedAt(LocalDateTime.now());
-        return animal;
+    public ResponseEntity detailAnimal(@PathVariable Long id) {
+        var animal = repository.getReferenceById(id);
+        return ResponseEntity.ok(new DetailAnimalDTO(animal));
     }
 }

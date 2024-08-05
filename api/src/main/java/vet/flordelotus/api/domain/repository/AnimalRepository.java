@@ -1,6 +1,7 @@
-package vet.flordelotus.api.domain.animal;
+package vet.flordelotus.api.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import vet.flordelotus.api.domain.entity.Animal;
 
 public interface AnimalRepository extends JpaRepository<Animal, Long> {
 
