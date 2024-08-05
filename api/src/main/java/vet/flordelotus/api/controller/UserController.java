@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vet.flordelotus.api.domain.dto.CreateAnimalDTO;
 import vet.flordelotus.api.domain.dto.CreateUserDTO;
+import vet.flordelotus.api.domain.dto.UpdateAnimalDTO;
 import vet.flordelotus.api.domain.dto.UpdateUserDTO;
 import vet.flordelotus.api.domain.entity.Animal;
 import vet.flordelotus.api.domain.entity.User;

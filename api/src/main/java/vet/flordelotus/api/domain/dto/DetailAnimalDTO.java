@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 public record DetailAnimalDTO(
         Long id,
         String name,
-        Long ownerId,
         Species species,
         String breed,
         Gender gender,
@@ -24,7 +23,6 @@ public record DetailAnimalDTO(
     public DetailAnimalDTO(Animal animal) {
         this(animal.getId(),
                 animal.getName(),
-                animal.getOwnerId(),
                 animal.getSpecies(),
                 animal.getBreed(),
                 animal.getGender(),
@@ -37,3 +35,5 @@ public record DetailAnimalDTO(
     }
 }
 
+ //Adicionar de volta depois que criarmos as roles
+// animal.getOwnerId(),
