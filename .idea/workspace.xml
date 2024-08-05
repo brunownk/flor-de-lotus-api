@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="634ca216-94b9-4972-8651-26db7af2e9db" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/api-flordelotus.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/controller/AnimalController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/controller/AnimalController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/domain/dto/CreateAnimalDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/domain/dto/CreateAnimalDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/domain/entity/Animal.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/domain/entity/Animal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/domain/repository/AnimalRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/domain/repository/AnimalRepository.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2kFSwMlNYLTty3YVdORPIVqVGVX" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;devEvamyuu&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="634ca216-94b9-4972-8651-26db7af2e9db" name="Changes" comment="" />
+      <created>1722878070260</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1722878070260</updated>
+    </task>
+    <servers />
+  </component>
+</project>

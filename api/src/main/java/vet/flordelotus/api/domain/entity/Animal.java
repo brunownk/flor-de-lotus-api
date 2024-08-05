@@ -34,9 +34,9 @@ public class Animal {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @NotNull
-    @Column(name = "owner_id", nullable = false)
-    private Long ownerId;
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -69,12 +69,12 @@ public class Animal {
     @Column(name = "deleted_by_id")
     private Long deletedById;
 
-    private Boolean active ;
+    private Boolean active;
 
-    public Animal(CreateAnimalDTO dados) {
+    public Animal(CreateAnimalDTO dados, User owner) {
         this.active = true;
         this.name = dados.name();
-        this.ownerId = dados.ownerId();
+        this.owner = owner;
         this.species = dados.species();
         this.breed = dados.breed();
         this.gender = dados.gender();
