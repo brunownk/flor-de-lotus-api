@@ -6,14 +6,11 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import vet.flordelotus.api.domain.dto.CreateUserDTO;
-import vet.flordelotus.api.domain.dto.DetailAnimalDTO;
-import vet.flordelotus.api.domain.dto.DetailUserDTO;
-import vet.flordelotus.api.domain.dto.ListUserDTO;
-import vet.flordelotus.api.domain.dto.UpdateUserDTO;
+import vet.flordelotus.api.domain.dto.*;
 import vet.flordelotus.api.domain.entity.Animal;
 import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.UserRepository;
@@ -30,20 +27,17 @@ public class UserController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserDTO dados, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity createUser(@RequestBody @Valid CreateUserDTO dados, UriComponentsBuilder uriBuilder) {
         var user = new User(dados);
         repository.save(user);
 
-        var uri = uriBuilder.path("/owners/{id}").buildAndExpand(user.getId()).toUri();
-
+        var uri = uriBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri();
         return ResponseEntity.created(uri).body(new DetailUserDTO(user));
     }
 
     @GetMapping
-    public ResponseEntity<Page<ListUserDTO>> listUsers(Pageable paginacao) {
-        var page = repository.findAll(paginacao).map(ListUserDTO::new);
-
-        return ResponseEntity.ok(page);
+    public List<ListUserDTO> listUserl() {
+        return repository.findAll().stream().map(ListUserDTO::new).toList();
     }
 
     @GetMapping("/{id}/animals")
@@ -58,41 +52,28 @@ public class UserController {
         return ResponseEntity.ok(animals);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     @Transactional
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody @Valid UpdateUserDTO dados) {
-        var user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
-
+    public ResponseEntity updateUser(@RequestBody @Valid UpdateUserDTO dados) {
+        var user = repository.getReferenceById(dados.id());
         user.updateInformations(dados);
-
         return ResponseEntity.ok(new DetailUserDTO(user));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") // necessario chaves({}), pois, sem isso o Spring vai considerar que a URL para chamar esse método deve ser /medicos/id, ou seja, ele vai considerar que a palavra id faz parte da URL, e não que se trata de um parâmetro dinâmico.
     @Transactional
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        var owner = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
-
-        repository.delete(owner);
-
+    public ResponseEntity deactivateUser(@PathVariable Long id){
+        var user = repository.getReferenceById(id); // Recupera o medico do banco de dados
+        //Seta atributo pra inativo
+        user.deactivate();
+        //Transactional realizara o update
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> detailUser(@PathVariable Long id) {
-        var user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
-
+    public ResponseEntity detailUser(@PathVariable Long id) {
+        var user = repository.getReferenceById(id);
         return ResponseEntity.ok(new DetailUserDTO(user));
-    }
-
-    public List<Animal> getAnimalsByOwner(Long ownerId) {
-        User user = repository.findById(ownerId)
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
-
-        return user.getAnimals(); // Obtém a lista de animais associados ao proprietário
     }
 }
 

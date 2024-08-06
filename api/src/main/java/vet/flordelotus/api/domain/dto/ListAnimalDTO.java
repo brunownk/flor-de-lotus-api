@@ -12,8 +12,6 @@ public record ListAnimalDTO(
         Long id,
         String name,
 
-        User user,
-
         Species species,
         String breed,
         Gender gender,
@@ -21,7 +19,6 @@ public record ListAnimalDTO(
 ) {
 
     public ListAnimalDTO(Animal animal) {
-        this(animal.getId(), animal.getName(), animal.getUser(), animal.getSpecies(), animal.getBreed(), animal.getGender(), animal.getDateOfBirth());
+        this(animal.getId(), animal.getName(), animal.getSpecies(), animal.getBreed(), animal.getGender(), animal.getDateOfBirth());
     }
-
 }

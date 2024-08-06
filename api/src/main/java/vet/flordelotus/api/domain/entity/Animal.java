@@ -67,11 +67,12 @@ public class Animal {
     @Column(name = "deleted_by_id")
     private Long deletedById;
 
-    private Boolean active ;
+    private Boolean active;
 
     public Animal(CreateAnimalDTO dados) {
         this.active = true;
         this.name = dados.name();
+        this.user = getUser();
         this.species = dados.species();
         this.breed = dados.breed();
         this.gender = dados.gender();
@@ -106,4 +107,9 @@ public class Animal {
         this.active = false;
         this.deletedAt = LocalDateTime.now();
     }
+
+    public void deactivate() {
+        this.active = false;
+    }
+
 }

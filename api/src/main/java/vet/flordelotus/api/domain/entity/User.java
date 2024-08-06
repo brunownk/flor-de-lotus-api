@@ -32,11 +32,13 @@ public class User implements UserDetails {
     private Long id;
     private String login;
     private String password;
+    private Boolean active;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Animal> animals = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Animal> animals;
 
     public User(CreateUserDTO dados) {
+        this.active = true;
         this.login = dados.login();
         this.password = dados.password();
     }
@@ -85,4 +87,9 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public void deactivate() {
+        this.active = false;
+    }
+
 }

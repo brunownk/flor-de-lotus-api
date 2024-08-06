@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import vet.flordelotus.api.domain.animal.Gender;
 import vet.flordelotus.api.domain.animal.Species;
+import vet.flordelotus.api.domain.entity.User;
 
 import java.time.LocalDate;
 
