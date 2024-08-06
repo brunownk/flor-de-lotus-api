@@ -1,5 +1,6 @@
 package vet.flordelotus.api.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,8 @@ import vet.flordelotus.api.domain.entity.Animal;
 import vet.flordelotus.api.service.AnimalService;
 
 @RestController
-@RequestMapping("animals")
+@RequestMapping("/animals")
+@SecurityRequirement(name = "bearer-key")
 public class AnimalController {
 
     @Autowired
