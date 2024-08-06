@@ -48,15 +48,8 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         Optional<User> user = userService.getUserById(id);
-        if (user.isPresent()) {
-            log.info("User found: " + user.get());
-            return ResponseEntity.ok(user.get());
-        } else {
-            log.info("User not found for ID: " + id);
-            return ResponseEntity.notFound().build();
-        }
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-}
 
     @GetMapping("/{userId}/animals")
     public ResponseEntity<List<Animal>> getUserAnimals(@PathVariable Long userId) {
