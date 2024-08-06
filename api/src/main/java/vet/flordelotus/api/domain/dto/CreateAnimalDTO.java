@@ -15,7 +15,7 @@ public record CreateAnimalDTO(
         String name,
 
         @NotNull(message = "O ID do proprietário é obrigatório.")
-        Long ownerId,
+        Long userId,
 
         @NotNull(message = "A espécie é obrigatória.")
         Species species,

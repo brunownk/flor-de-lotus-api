@@ -1,11 +1,16 @@
 package vet.flordelotus.api.domain.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import vet.flordelotus.api.domain.dto.CreateUserDTO;
+import vet.flordelotus.api.domain.dto.UpdateUserDTO;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,7 +25,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-
 public class User implements UserDetails {
 
     @Id
@@ -29,11 +33,21 @@ public class User implements UserDetails {
     private String login;
     private String password;
 
-    @OneToMany(mappedBy = "owner")
-    private List<Animal> animals;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Animal> animals = new ArrayList<>();
 
-    public void setAnimals(List<Animal> animals) {
-        this.animals = animals;
+    public User(CreateUserDTO dados) {
+        this.login = dados.login();
+        this.password = dados.password();
+    }
+
+    public void updateInformations(UpdateUserDTO dados) {
+        if (dados.login() != null) {
+            this.login = dados.login();
+        }
+        if (dados.password() != null) {
+            this.password = dados.password();
+        }
     }
 
     @Override

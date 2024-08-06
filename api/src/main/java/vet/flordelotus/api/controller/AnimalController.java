@@ -1,5 +1,6 @@
 package vet.flordelotus.api.controller;
 
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +15,32 @@ import vet.flordelotus.api.domain.dto.DetailAnimalDTO;
 import vet.flordelotus.api.domain.dto.ListAnimalDTO;
 import vet.flordelotus.api.domain.dto.UpdateAnimalDTO;
 import vet.flordelotus.api.domain.entity.Animal;
-import vet.flordelotus.api.service.AnimalService;
+import vet.flordelotus.api.domain.entity.User;
+import vet.flordelotus.api.domain.repository.AnimalRepository;
+import vet.flordelotus.api.domain.repository.UserRepository;
 
 @RestController
-@RequestMapping("/animals")
+@RequestMapping("animals")
 @SecurityRequirement(name = "bearer-key")
 public class AnimalController {
 
     @Autowired
-    private AnimalService animalService;
+    private AnimalRepository repository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping
     @Transactional
-    public ResponseEntity<DetailAnimalDTO> createAnimal(@RequestBody @Valid CreateAnimalDTO dados, UriComponentsBuilder uriBuilder) {
-        Animal animal = animalService.createAnimal(dados);
+    public ResponseEntity<?> createAnimal(@RequestBody @Valid CreateAnimalDTO dados, UriComponentsBuilder uriBuilder) {
+        // Buscar User pelo ID
+        User user = userRepository.findById(dados.userId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Criar Animal
+        var animal = new Animal(dados);
+        animal.setUser(user); // Associa o User encontrado ao Animal
+        repository.save(animal);
 
         var uri = uriBuilder.path("/animals/{id}").buildAndExpand(animal.getId()).toUri();
 
@@ -36,27 +49,32 @@ public class AnimalController {
 
     @GetMapping
     public ResponseEntity<Page<ListAnimalDTO>> listAnimals(Pageable paginacao) {
-        Page<Animal> page = animalService.getAllAnimals(paginacao);
-        return ResponseEntity.ok(page.map(ListAnimalDTO::new));
+        var page = repository.findAll(paginacao).map(ListAnimalDTO::new);
+
+        return ResponseEntity.ok(page);
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity<DetailAnimalDTO> updateAnimal(@RequestBody @Valid UpdateAnimalDTO dados) {
-        Animal animal = animalService.updateAnimal(dados);
+    public ResponseEntity updateAnimal(@RequestBody @Valid UpdateAnimalDTO dados) {
+        var animal = repository.getReferenceById(dados.id());
+        animal.updateInformations(dados);
+
         return ResponseEntity.ok(new DetailAnimalDTO(animal));
     }
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<Void> deleteAnimal(@PathVariable Long id) {
-        animalService.deleteAnimal(id);
+    public ResponseEntity deleteAnimal(@PathVariable Long id) {
+        var animal = repository.getReferenceById(id);
+        animal.delete();
+
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DetailAnimalDTO> detailAnimal(@PathVariable Long id) {
-        Animal animal = animalService.getAnimalById(id).orElseThrow(() -> new RuntimeException("Animal not found"));
+    public ResponseEntity detailAnimal(@PathVariable Long id) {
+        var animal = repository.getReferenceById(id);
         return ResponseEntity.ok(new DetailAnimalDTO(animal));
     }
 }

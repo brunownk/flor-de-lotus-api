@@ -1,10 +1,13 @@
 package vet.flordelotus.api.domain.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record CreateUserDTO(
-        @NotNull String username,
-        @NotNull String password,
-        @NotNull String role,
-        byte[] image
+        @NotBlank(message = "O nome do proprietário é obrigatório.")
+        @Size(min = 1, max = 100, message = "O nome deve ter entre 1 e 100 caracteres.")
+        String login,
+        @NotBlank(message = "O nome do proprietário é obrigatório.")
+        String password
 ) {}
+

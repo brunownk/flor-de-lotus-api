@@ -3,10 +3,7 @@ package vet.flordelotus.api.domain.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import vet.flordelotus.api.domain.animal.Gender;
 import vet.flordelotus.api.domain.animal.Species;
@@ -19,6 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "animals")
 @Entity(name = "Animal")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -35,8 +33,8 @@ public class Animal {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -69,12 +67,11 @@ public class Animal {
     @Column(name = "deleted_by_id")
     private Long deletedById;
 
-    private Boolean active;
+    private Boolean active ;
 
-    public Animal(CreateAnimalDTO dados, User owner) {
+    public Animal(CreateAnimalDTO dados) {
         this.active = true;
         this.name = dados.name();
-        this.owner = owner;
         this.species = dados.species();
         this.breed = dados.breed();
         this.gender = dados.gender();
