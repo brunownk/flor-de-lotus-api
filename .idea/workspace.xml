@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="634ca216-94b9-4972-8651-26db7af2e9db" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/auth/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/auth/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/service/CustomUserDetailsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/vet/flordelotus/api/service/CustomUserDetailsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/resources/db/migration/V3__create-table-users.sql" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/resources/db/migration/V3__create-table-users.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
