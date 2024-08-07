@@ -8,6 +8,8 @@ public record CreateUserDTO(
         @Size(min = 1, max = 100, message = "O nome deve ter entre 1 e 100 caracteres.")
         String login,
         @NotBlank(message = "O nome do proprietário é obrigatório.")
-        String password
+        String password,
+        String name,
+        String username
 ) {}
 

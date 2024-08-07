@@ -1,8 +1,6 @@
 package vet.flordelotus.api.domain.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,9 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import vet.flordelotus.api.domain.dto.CreateUserDTO;
 import vet.flordelotus.api.domain.dto.UpdateUserDTO;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 //Entidade JPA
 
@@ -32,15 +31,33 @@ public class User implements UserDetails {
     private Long id;
     private String login;
     private String password;
+
+    private String name;
+    private String username;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     private Boolean active;
 
     @OneToMany(mappedBy = "user")
     private List<Animal> animals;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
     public User(CreateUserDTO dados) {
         this.active = true;
         this.login = dados.login();
         this.password = dados.password();
+        this.name = dados.name();
+        this.username = dados.username();
     }
 
     public void updateInformations(UpdateUserDTO dados) {
@@ -50,12 +67,19 @@ public class User implements UserDetails {
         if (dados.password() != null) {
             this.password = dados.password();
         }
+        if (dados.name() != null) {
+            this.name = dados.name();
+        }
+        if (dados.username() != null) {
+            this.username = dados.username();
+        }
     }
 
     @Override
-    //Controle de perfis
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override

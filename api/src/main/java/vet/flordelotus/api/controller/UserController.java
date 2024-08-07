@@ -18,7 +18,7 @@ import vet.flordelotus.api.domain.repository.UserRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("/user")
 @SecurityRequirement(name = "bearer-key")
 public class UserController {
 

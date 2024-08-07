@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("animals")
+@RequestMapping("/animals")
 @SecurityRequirement(name = "bearer-key")
 public class AnimalController {
 

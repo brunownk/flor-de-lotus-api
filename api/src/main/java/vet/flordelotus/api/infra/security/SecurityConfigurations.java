@@ -32,6 +32,9 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(req -> {
                     //aqui autoriza entrar sem autenticacao, pq eh o login
                     req.requestMatchers("/login").permitAll();
+                    req.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN");
+                    req.requestMatchers("/animals/**").hasAnyRole("USER", "ADMIN");
+
                     //adicionar documentacao ao projeto
                     req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
 
@@ -56,3 +59,5 @@ public class SecurityConfigurations {
         return new BCryptPasswordEncoder();
     }
 }
+
+

@@ -29,7 +29,7 @@ public class TokenService {
             //secret = chave secreta que você define para proteger seus tokens JWT.
             var algoritmo = Algorithm.HMAC256(secret);
             return JWT.create() //Da pra colocar outros with como o withClaim que pode mostrar o id
-                    .withIssuer("API Voll.med") //Quem emitiu o token
+                    .withIssuer("API Vet.florlotus") //Quem emitiu o token
                     .withSubject(usuario.getLogin()) //Identifica a qual usuario o token pertence
                     .withExpiresAt(dataExpiracao())
                     .sign(algoritmo);
@@ -44,7 +44,7 @@ public class TokenService {
         try {
             var algoritmo = Algorithm.HMAC256(secret);
             return JWT.require(algoritmo)
-                    .withIssuer("API Voll.med")
+                    .withIssuer("API Vet.florlotus")
                     .build()
                     .verify(tokenJWT)
                     .getSubject();
