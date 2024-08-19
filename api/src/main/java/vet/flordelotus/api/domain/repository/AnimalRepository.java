@@ -8,5 +8,4 @@ import vet.flordelotus.api.domain.entity.Animal;
 import java.util.Optional;
 
 public interface AnimalRepository extends JpaRepository<Animal, Long> {
-
 }

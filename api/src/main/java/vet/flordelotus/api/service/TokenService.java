@@ -12,47 +12,40 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-//Classe que utiliza da biblioteca Auth0 para gerar o token
 @Service
 public class TokenService {
 
-    //Value = @Value! Ele é como um "ponteiro" que o Spring usa para pegar informações de fora do seu código e colocálas dentro da sua aplicação.
-    //para nao colocar diretamente no codigo, configuramos o secret no yml
-    // ${JWT_SECRET:12345678}, no caso o primeiro seria uma variavel ambiente e caso nao existir
-    // sera usado o 12345678 como default
     @Value("${api.security.token.secret}")
     private String secret;
 
-    public String gerarToken(User usuario){
+    public String generateToken(User user) {
         try {
-            //HS256 = Algoritmo para fazer a assinatura digital
-            //secret = chave secreta que você define para proteger seus tokens JWT.
-            var algoritmo = Algorithm.HMAC256(secret);
-            return JWT.create() //Da pra colocar outros with como o withClaim que pode mostrar o id
-                    .withIssuer("API Vet.florlotus") //Quem emitiu o token
-                    .withSubject(usuario.getLogin()) //Identifica a qual usuario o token pertence
-                    .withExpiresAt(dataExpiracao())
-                    .sign(algoritmo);
-        } catch (JWTCreationException exception){
-            // Invalid Signing configuration / Couldn't convert Claims.
-            throw new RuntimeException("Erro ao gerar token jwt", exception);
+            var algorithm = Algorithm.HMAC256(secret);
+            return JWT.create()
+                    .withIssuer("Vet.flordelotus API")
+                    .withSubject(user.getLogin())
+                    .withExpiresAt(expirationDate())
+                    .sign(algorithm);
+        } catch (JWTCreationException exception) {
+            throw new RuntimeException("Error generating JWT token", exception);
         }
     }
 
-    //devolver o usuario que esta armazenado dentro do token e valida
-    public String getSubject(String tokenJWT) {
+    public String getSubject(String jwtToken) {
         try {
-            var algoritmo = Algorithm.HMAC256(secret);
-            return JWT.require(algoritmo)
-                    .withIssuer("API Vet.florlotus")
+            var algorithm = Algorithm.HMAC256(secret);
+            return JWT.require(algorithm)
+                    .withIssuer("Vet.flordelotus API")
                     .build()
-                    .verify(tokenJWT)
+                    .verify(jwtToken)
                     .getSubject();
         } catch (JWTVerificationException exception) {
-            throw new RuntimeException("Token JWT inválido ou expirado!");
+            throw new RuntimeException("Invalid or expired JWT token!");
         }
     }
-    private Instant dataExpiracao() {
+
+    private Instant expirationDate() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }
 }
+

@@ -1,8 +1,8 @@
 package vet.flordelotus.api.controller;
 
 import jakarta.validation.Valid;
-import vet.flordelotus.api.domain.dto.DadosAutenticacao;
-import vet.flordelotus.api.domain.dto.DadosTokenJWT;
+import vet.flordelotus.api.domain.dto.securityDTO.AuthenticationData;
+import vet.flordelotus.api.domain.dto.securityDTO.JWTTokenData;
 import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,26 +14,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-//controller responsável por disparar o processo de autenticação
 @RestController
 @RequestMapping("/login")
-public class AutenticacaoController {
+public class AuthenticationController {
 
     @Autowired
-    //realiza a autenticacao inves de chamar o SecurityConfigurations diretamente
     private AuthenticationManager manager;
 
     @Autowired
     private TokenService tokenService;
 
     @PostMapping
-    public ResponseEntity efetuarLogin(@RequestBody @Valid DadosAutenticacao dados) {
-        //UsernamePasswordAuthenticationToken = dto do proprio spring
-        var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.password());
+    public ResponseEntity login(@RequestBody @Valid AuthenticationData data) {
+        var authenticationToken = new UsernamePasswordAuthenticationToken(data.login(), data.password());
         var authentication = manager.authenticate(authenticationToken);
 
-        var tokenJWT = tokenService.gerarToken((User) authentication.getPrincipal());
-        //se for logado com sucesso, o DTO devolve o token no json
-        return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
+        var jwtToken = tokenService.generateToken((User) authentication.getPrincipal());
+        return ResponseEntity.ok(new JWTTokenData(jwtToken));
     }
 }
+

@@ -1,17 +1,18 @@
-package vet.flordelotus.api.domain.dto;
+package vet.flordelotus.api.domain.dto.animalDTO;
 
 import vet.flordelotus.api.domain.entity.Animal;
-import vet.flordelotus.api.domain.animal.Gender;
-import vet.flordelotus.api.domain.animal.Species;
+import vet.flordelotus.api.domain.entity.AnimalBreed;
+import vet.flordelotus.api.domain.entity.AnimalType;
+import vet.flordelotus.api.domain.Gender;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record DetailAnimalDTO(
+public record AnimalDetailDTO(
         Long id,
         String name,
-        Species species,
-        String breed,
+        AnimalType type,
+        AnimalBreed breed,
         Gender gender,
         LocalDate dateOfBirth,
         LocalDateTime createdAt,
@@ -20,10 +21,10 @@ public record DetailAnimalDTO(
         Long deletedById,
         Boolean active) {
 
-    public DetailAnimalDTO(Animal animal) {
+    public AnimalDetailDTO(Animal animal) {
         this(animal.getId(),
                 animal.getName(),
-                animal.getSpecies(),
+                animal.getType(),
                 animal.getBreed(),
                 animal.getGender(),
                 animal.getDateOfBirth(),
@@ -35,5 +36,6 @@ public record DetailAnimalDTO(
     }
 }
 
- //Adicionar de volta depois que criarmos as roles
+
+//Adicionar de volta depois que criarmos as roles
 // animal.getOwnerId(),

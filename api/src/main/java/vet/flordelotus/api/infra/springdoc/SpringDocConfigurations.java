@@ -23,13 +23,13 @@ public class SpringDocConfigurations {
                                         .bearerFormat("JWT")))
                 .info(new Info()
                         .title("Vet.flordelotus API")
-                        .description("API Rest da aplicação Vet.flordelotus, contendo as funcionalidades de CRUD de animais e de usuarios,")
+                        .description("Rest API for the Vet.flordelotus application, containing CRUD functionalities for animals and users.")
                         .contact(new Contact()
-                                .name("Time Backend")
+                                .name("Backend Team")
                                 .email("backend@vet.flordelotus"))
                         .license(new License()
                                 .name("Apache 2.0")
-                                .url("http://voll.med/api/licenca")));
+                                .url("http://vet.flordelotus/api/license")));
     }
-
 }
+

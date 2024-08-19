@@ -14,9 +14,6 @@ import vet.flordelotus.api.service.TokenService;
 
 import java.io.IOException;
 
-//Filtro =  é como um segurança que verifica as requisições que chegam na sua API.
-//Component = Classe generica, quando nao sabemos qual e
-//OncePerRequestFilter garante que vai ser executada apenas uma vez por requisicao
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
@@ -25,16 +22,11 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     private UserRepository repository;
 
-    //Filterchain = cadeia de filtros, ele chama o proximo filtro
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        var tokenJWT = recuperarToken(request);
-        //se tem o token no cabecalho
+        var tokenJWT = retrieveToken(request);
         if(tokenJWT != null) {
-            //realiza a validacao do token e pega o subject
             var subject = tokenService.getSubject(tokenJWT);
-
-            //falar pro spring que o usuario esta logado
             var user = repository.findByLogin(subject);
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -42,11 +34,11 @@ public class SecurityFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    //recupera a string do token (o cabecalho), agora as requisicoes estao bloqueadas
-    private String recuperarToken(HttpServletRequest request) {
+    private String retrieveToken(HttpServletRequest request) {
         var authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null) {
-            return authorizationHeader.replace("Bearer ", "").trim(); //trim=apaga os espacos em branco
-        } return null;
+            return authorizationHeader.replace("Bearer ", "").trim();
+        }
+        return null;
     }
 }

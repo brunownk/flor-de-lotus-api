@@ -5,10 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import vet.flordelotus.api.domain.animal.Gender;
-import vet.flordelotus.api.domain.animal.Species;
-import vet.flordelotus.api.domain.dto.CreateAnimalDTO;
-import vet.flordelotus.api.domain.dto.UpdateAnimalDTO;
+import vet.flordelotus.api.domain.Gender;
+import vet.flordelotus.api.domain.dto.animalDTO.AnimalCreateDTO;
+import vet.flordelotus.api.domain.dto.animalDTO.AnimalUpdateDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +23,6 @@ public class Animal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
     @NotNull
@@ -36,14 +34,13 @@ public class Animal {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "species", nullable = false)
-    private Species species;
+    @ManyToOne
+    @JoinColumn(name = "animal_type_id", nullable = false)
+    private AnimalType type;
 
-    @Size(max = 100)
-    @Column(name = "breed")
-    private String breed;
+    @ManyToOne
+    @JoinColumn(name = "animal_breed_id", nullable = false)
+    private AnimalBreed breed;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -69,15 +66,14 @@ public class Animal {
 
     private Boolean active;
 
-    public Animal(CreateAnimalDTO dados) {
+    public Animal(AnimalCreateDTO data) {
         this.active = true;
-        this.name = dados.name();
+        this.name = data.name();
         this.user = getUser();
-        this.species = dados.species();
-        this.breed = dados.breed();
-        this.gender = dados.gender();
-        this.dateOfBirth = dados.dateOfBirth();
-        this.createdById = dados.createdById();
+        this.breed = new AnimalBreed(data.animalBreedId());
+        this.gender = data.gender();
+        this.dateOfBirth = data.dateOfBirth();
+        this.createdById = data.createdById();
     }
 
     @PrePersist
@@ -85,21 +81,21 @@ public class Animal {
         createdAt = LocalDateTime.now();
     }
 
-    public void updateInformations(UpdateAnimalDTO dados) {
-        if (dados.name() != null) {
-            this.name = dados.name();
+    public void updateInformations(AnimalUpdateDTO data) {
+        if (data.name() != null) {
+            this.name = data.name();
         }
-        if (dados.species() != null) {
-            this.species = dados.species();
+        if (data.breed() != null) {
+            this.breed = data.breed();
         }
-        if (dados.breed() != null) {
-            this.breed = dados.breed();
+        if (data.type() != null) {
+            this.type = data.type();
         }
-        if (dados.gender() != null) {
-            this.gender = dados.gender();
+        if (data.gender() != null) {
+            this.gender = data.gender();
         }
-        if (dados.dateOfBirth() != null) {
-            this.dateOfBirth = dados.dateOfBirth();
+        if (data.dateOfBirth() != null) {
+            this.dateOfBirth = data.dateOfBirth();
         }
     }
 
@@ -113,3 +109,4 @@ public class Animal {
     }
 
 }
+

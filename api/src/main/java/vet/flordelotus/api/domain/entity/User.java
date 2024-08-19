@@ -5,20 +5,15 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import vet.flordelotus.api.domain.dto.CreateUserDTO;
-import vet.flordelotus.api.domain.dto.UpdateUserDTO;
+import vet.flordelotus.api.domain.dto.userDTO.UserCreateDTO;
+import vet.flordelotus.api.domain.dto.userDTO.UserUpdateDTO;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
-//Entidade JPA
-
-//Essa entidade se chama Medicos no DB
 @Table(name = "users")
 @Entity(name = "User")
-//Anotacoes LOMBOK para criar getters/setters e construtores automaticamente
 @Getter
 @Setter
 @NoArgsConstructor
@@ -52,26 +47,26 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    public User(CreateUserDTO dados) {
+    public User(UserCreateDTO data) {
         this.active = true;
-        this.login = dados.login();
-        this.password = dados.password();
-        this.name = dados.name();
-        this.username = dados.username();
+        this.login = data.login();
+        this.password = data.password();
+        this.name = data.name();
+        this.username = data.username();
     }
 
-    public void updateInformations(UpdateUserDTO dados) {
-        if (dados.login() != null) {
-            this.login = dados.login();
+    public void updateInformations(UserUpdateDTO data) {
+        if (data.login() != null) {
+            this.login = data.login();
         }
-        if (dados.password() != null) {
-            this.password = dados.password();
+        if (data.password() != null) {
+            this.password = data.password();
         }
-        if (dados.name() != null) {
-            this.name = dados.name();
+        if (data.name() != null) {
+            this.name = data.name();
         }
-        if (dados.username() != null) {
-            this.username = dados.username();
+        if (data.username() != null) {
+            this.username = data.username();
         }
     }
 
@@ -117,3 +112,4 @@ public class User implements UserDetails {
     }
 
 }
+
