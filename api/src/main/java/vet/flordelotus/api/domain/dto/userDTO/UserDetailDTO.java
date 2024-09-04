@@ -6,10 +6,11 @@ public record UserDetailDTO(
         Long id,
         String login,
         String name,
-        String username
+        String username,
+        String crmv
 ) {
     public UserDetailDTO(User user) {
-        this(user.getId(), user.getLogin(), user.getName(), user.getUsername());
+        this(user.getId(), user.getLogin(), user.getName(), user.getUsername(), user.getCrmv());
     }
 
 }
