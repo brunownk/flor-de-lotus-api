@@ -11,34 +11,4 @@ import java.time.LocalDateTime;
 
 public interface VeterinarianRepository extends JpaRepository<Veterinarian, Long> {
 
-    Page<Veterinarian> findAllByActiveTrue(Pageable paginacao);
-
-    @Query("""
-                select v from Veterinarian v
-                           where
-                           v.active = true
-                           and
-                           v.specialty = :specialty
-                           and
-                           v.id not in(
-                               select a.veterinarian.id from Appointment a
-                               where
-                               a.date = :date
-                               and
-                               a.cancelAppointmentReason is null
-                           )
-                           order by rand()
-                           limit 1
-                           
-            """)
-    Veterinarian escolherMedicoAleatorioLivreNaData(Specialty specialty, LocalDateTime date);
-
-    @Query("""
-            select v.active
-            from Veterinarian v
-            where
-            v.id = :id
-            """)
-    Boolean findActiveById(Long id);
 }
-

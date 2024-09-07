@@ -16,7 +16,7 @@ public class VetWithAnotherAppointmentsAtTheSameTimeValidator implements Appoint
     public void validate(AppointmentScheduleDTO data) {
         var vetHasAnotherAppointmentAtTheSameTime = repository.existsByVeterinarianIdAndDateAndCancelAppointmentReasonIsNull(data.idVeterinarian(), data.date());
         if (vetHasAnotherAppointmentAtTheSameTime) {
-            throw new ExceptionValidation("Médico já possui outra consulta agendada nesse mesmo horário");
+            throw new ExceptionValidation("The vet already has another appointment scheduled at the same time");
         }
     }
 

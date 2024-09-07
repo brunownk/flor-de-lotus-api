@@ -16,7 +16,7 @@ public class ClinicOpeningHoursValidator implements AppointmentSchedulingValidat
         var beforeClinicOpening = appointmentDate.getHour() < 9;
         var afterClinicClosing = appointmentDate.getHour() > 19;
         if (sunday || beforeClinicOpening || afterClinicClosing) {
-            throw new ExceptionValidation("Consulta fora do horário de funcionamento da clínica");
+            throw new ExceptionValidation("Consultation outside clinic opening hours");
         }
 
     }

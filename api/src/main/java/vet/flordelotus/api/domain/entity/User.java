@@ -60,6 +60,12 @@ public class User implements UserDetails {
         if (data.password() != null) {
             this.password = data.password();
         }
+        if (data.name() != null) {
+            this.name = data.name();
+        }
+        if (data.username() != null) {
+            this.username = data.username();
+        }
     }
 
     @Override

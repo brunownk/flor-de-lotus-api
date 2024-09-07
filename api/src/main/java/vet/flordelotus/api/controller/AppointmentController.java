@@ -11,7 +11,7 @@ import vet.flordelotus.api.service.AppointmentSchedule;
 import vet.flordelotus.api.domain.dto.appointment.AppointmentScheduleDTO;
 
 @RestController
-@RequestMapping("consultas")
+@RequestMapping("appointment")
 @SecurityRequirement(name = "bearer-key")
 public class AppointmentController {
 

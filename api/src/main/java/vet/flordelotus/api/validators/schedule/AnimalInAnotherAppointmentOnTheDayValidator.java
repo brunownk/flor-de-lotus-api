@@ -18,7 +18,7 @@ public class AnimalInAnotherAppointmentOnTheDayValidator implements AppointmentS
         var lastTime = data.date().withHour(18);
         var animalHasAnotherAppointmentOnTheDay = repository.existsByAnimalIdAndDateBetween(data.idAnimal(), firstTime, lastTime);
         if (animalHasAnotherAppointmentOnTheDay) {
-            throw new ExceptionValidation("Paciente já possui uma consulta agendada nesse dia");
+            throw new ExceptionValidation("Patient already has an appointment scheduled for that day");
         }
     }
 

@@ -10,7 +10,7 @@ import vet.flordelotus.api.domain.repository.AppointmentRepository;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-@Component("ValidadorHorarioAntecedenciaCancelamento")
+@Component("TimeAdvanceCancellationValidator")
 public class AdvanceTimeValidator implements AppointmentCancellationValidator {
 
     @Autowired
@@ -23,7 +23,7 @@ public class AdvanceTimeValidator implements AppointmentCancellationValidator {
         var differenceInHours = Duration.between(now, appointment.getDate()).toHours();
 
         if (differenceInHours < 24) {
-            throw new ExceptionValidation("Consulta somente pode ser cancelada com antecedência mínima de 24h!");
+            throw new ExceptionValidation("Appointments can only be cancelled with at least 24 hours' notice!");
         }
     }
 }

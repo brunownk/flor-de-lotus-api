@@ -10,8 +10,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import vet.flordelotus.api.domain.dto.vetDTO.VetCreateDTO;
 import vet.flordelotus.api.domain.dto.vetDTO.VetDetailDTO;
 import vet.flordelotus.api.domain.dto.vetDTO.VetListDTO;
-import vet.flordelotus.api.domain.dto.vetDTO.VetUpdateDTO;
+import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.entity.Veterinarian;
+import vet.flordelotus.api.domain.repository.UserRepository;
 import vet.flordelotus.api.domain.repository.VeterinarianRepository;
 
 import java.util.List;
@@ -24,10 +25,17 @@ public class VetController {
     @Autowired
     private VeterinarianRepository repository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @PostMapping
     @Transactional
     public ResponseEntity createVet(@RequestBody @Valid VetCreateDTO data, UriComponentsBuilder uriBuilder) {
+
+        User user = userRepository.findById(data.userId()).orElseThrow(() -> new RuntimeException("User not found"));
+
         var vet = new Veterinarian(data);
+        vet.setUser(user);
         repository.save(vet);
 
         var uri = uriBuilder.path("/veterinarians/{id}").buildAndExpand(vet.getId()).toUri();
@@ -37,22 +45,6 @@ public class VetController {
     @GetMapping
     public List<VetListDTO> listVet() {
         return repository.findAll().stream().map(VetListDTO::new).toList();
-    }
-
-    @PutMapping
-    @Transactional
-    public ResponseEntity updateVet(@RequestBody @Valid VetUpdateDTO data){
-        var vet = repository.getReferenceById(data.id());
-        vet.updateInformations(data);
-        return ResponseEntity.ok(new VetDetailDTO(vet));
-    }
-
-    @DeleteMapping("/{id}")
-    @Transactional
-    public ResponseEntity deactivateVet(@PathVariable Long id){
-        var vet = repository.getReferenceById(id);
-        vet.deactivate();
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
