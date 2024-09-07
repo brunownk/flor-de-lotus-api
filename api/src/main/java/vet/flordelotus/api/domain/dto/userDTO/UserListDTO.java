@@ -4,10 +4,10 @@ import vet.flordelotus.api.domain.entity.User;
 
 public record UserListDTO(
         Long id,
-        String name
+        String login
 ) {
     public UserListDTO(User user) {
-        this(user.getId(), user.getName());
+        this(user.getId(), user.getLogin());
     }
 }
 

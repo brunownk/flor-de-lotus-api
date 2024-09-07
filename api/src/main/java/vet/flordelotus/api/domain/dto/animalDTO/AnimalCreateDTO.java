@@ -3,7 +3,7 @@ package vet.flordelotus.api.domain.dto.animalDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import vet.flordelotus.api.domain.Gender;
+import vet.flordelotus.api.enums.animal.Gender;
 import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedDTO;
 import vet.flordelotus.api.domain.dto.animalTypeDTO.AnimalTypeDTO;
 

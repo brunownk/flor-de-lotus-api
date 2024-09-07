@@ -9,9 +9,6 @@ public record UserCreateDTO(
         String login,
 
         @NotBlank(message = "The owner's name is required.")
-        String password,
-        String name,
-        String username,
-        String crmv
+        String password
 ) {}
 

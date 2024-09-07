@@ -1,4 +1,4 @@
-package vet.flordelotus.api.domain;
+package vet.flordelotus.api.enums.animal;
 
 public enum Gender {
     Male,

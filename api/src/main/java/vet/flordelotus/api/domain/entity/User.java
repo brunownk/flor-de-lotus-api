@@ -30,8 +30,6 @@ public class User implements UserDetails {
     private String name;
     private String username;
 
-    private String crmv;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -53,9 +51,6 @@ public class User implements UserDetails {
         this.active = true;
         this.login = data.login();
         this.password = data.password();
-        this.name = data.name();
-        this.username = data.username();
-        this.crmv = data.crmv();
     }
 
     public void updateInformations(UserUpdateDTO data) {
@@ -64,12 +59,6 @@ public class User implements UserDetails {
         }
         if (data.password() != null) {
             this.password = data.password();
-        }
-        if (data.name() != null) {
-            this.name = data.name();
-        }
-        if (data.username() != null) {
-            this.username = data.username();
         }
     }
 

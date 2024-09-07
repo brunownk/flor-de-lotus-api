@@ -6,8 +6,6 @@ public record UserUpdateDTO(
         @NotNull(message = "The type ID is required.")
         Long id,
         String login,
-        String password,
-        String name,
-        String username
+        String password
 ) {}
 

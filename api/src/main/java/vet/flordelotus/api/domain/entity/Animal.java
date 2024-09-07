@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import vet.flordelotus.api.domain.Gender;
+import vet.flordelotus.api.enums.animal.Gender;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalCreateDTO;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalUpdateDTO;
 
