@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalDetailDTO;
@@ -25,15 +26,23 @@ public class UserController {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping
     @Transactional
-    public ResponseEntity createUser(@RequestBody @Valid UserCreateDTO data, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<UserDetailDTO> createUser(@RequestBody @Valid UserCreateDTO data, UriComponentsBuilder uriBuilder) {
+        String encodedPassword = passwordEncoder.encode(data.password());
+
         var user = new User(data);
+        user.setPassword(encodedPassword);
+
         repository.save(user);
 
-        var uri = uriBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri();
+        var uri = uriBuilder.path("/users/{id}").buildAndExpand(user.getId()).toUri();
         return ResponseEntity.created(uri).body(new UserDetailDTO(user));
     }
+
 
     @GetMapping
     public List<UserListDTO> listUsers() {
