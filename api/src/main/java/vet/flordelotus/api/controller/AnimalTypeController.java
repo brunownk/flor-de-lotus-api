@@ -39,17 +39,12 @@ public class AnimalTypeController {
     @GetMapping
     public ResponseEntity<Page<AnimalTypeListDTO>> listAnimalTypes(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "false") boolean withDeleted) {
+            @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<AnimalType> types;
 
-        if (withDeleted) {
-            types = repository.findAll(pageable); // Retrieves all animal types, including inactive ones
-        } else {
-            types = repository.findByActiveTrue(pageable); // Retrieves only active animal types
-        }
+        types = repository.findAll(pageable);
 
         Page<AnimalTypeListDTO> typeDTOs = types.map(AnimalTypeListDTO::new);
         return ResponseEntity.ok(typeDTOs);
@@ -67,7 +62,6 @@ public class AnimalTypeController {
     @Transactional
     public ResponseEntity deleteAnimalType(@PathVariable Long id) {
         var animalType = repository.getReferenceById(id);
-        animalType.deactivate();  // Use soft delete by marking as inactive
         repository.save(animalType);
         return ResponseEntity.noContent().build();
     }

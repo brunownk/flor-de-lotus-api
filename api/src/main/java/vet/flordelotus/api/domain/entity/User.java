@@ -37,7 +37,7 @@ public class User implements UserDetails {
     private LocalDateTime deletedAt;
 
     @Column(name = "active", nullable = false)
-    private Boolean active = true; // Default to true
+    private Boolean active = true;
 
     @OneToMany(mappedBy = "user")
     private List<Animal> animals;
@@ -56,7 +56,7 @@ public class User implements UserDetails {
     }
 
     public User(UserCreateDTO data) {
-        this.active = true; // Ensure active is set to true when a user is created
+        this.active = true;
         this.username = data.username();
         this.password = data.password();
         this.name = data.name();
@@ -113,7 +113,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return Boolean.TRUE.equals(active); // Ensure the account is enabled only if it is active
+        return Boolean.TRUE.equals(active);
     }
 
     public void deactivate() {

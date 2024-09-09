@@ -57,7 +57,7 @@ public class AnimalController {
         if (withDeleted) {
             animals = repository.findAll(pageable); // Retrieves all animals, including inactive ones
         } else {
-            animals = repository.findByIsActive(true, pageable); // Retrieves only active animals
+            animals = repository.findAllByActiveTrue(true, pageable); // Retrieves only active animals
         }
 
         Page<AnimalListDTO> animalDTOs = animals.map(AnimalListDTO::new);

@@ -55,7 +55,7 @@ public class VetController {
         if (withDeleted) {
             vets = repository.findAll(pageable); // Retrieves all veterinarians, including inactive ones
         } else {
-            vets = repository.findByActiveTrue(pageable); // Retrieves only active veterinarians
+            vets = repository.findAllByActiveTrue(pageable); // Retrieves only active veterinarians
         }
 
         Page<VetListDTO> vetDTOs = vets.map(VetListDTO::new);

@@ -1,5 +1,6 @@
 package vet.flordelotus.api.domain.dto.vetDTO;
 
+import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.entity.Veterinarian;
 import vet.flordelotus.api.enums.vet.Specialty;
 
@@ -18,6 +19,5 @@ public record VetListDTO(
                 veterinarian.getUser().getUsername(),
                 veterinarian.getUser().getName());
     }
-
 }
 

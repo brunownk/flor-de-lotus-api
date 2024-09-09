@@ -36,13 +36,9 @@ public class AnimalType {
     @Column(name = "deleted_by_id")
     private Long deletedById;
 
-    @Column(name = "active", nullable = false)
-    private Boolean active = true; // Default to true
-
     public AnimalType(AnimalTypeCreateDTO data) {
         this.name = data.name();
         this.createdById = data.createdById();
-        this.active = true; // Mark as active by default
     }
 
     public AnimalType(AnimalTypeDTO data) {
@@ -58,11 +54,5 @@ public class AnimalType {
         if (data.name() != null) {
             this.name = data.name();
         }
-    }
-
-    // Method to deactivate an AnimalType
-    public void deactivate() {
-        this.deletedAt = LocalDateTime.now();
-        this.active = false;
     }
 }

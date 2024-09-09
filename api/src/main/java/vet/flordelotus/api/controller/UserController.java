@@ -69,9 +69,9 @@ public class UserController {
         Page<User> users;
 
         if (withDeleted) {
-            users = repository.findAll(pageable); // Retrieves all users, including inactive ones
+            users = repository.findAll(pageable);
         } else {
-            users = repository.findAllByActiveTrue(pageable); // Retrieves only active users
+            users = repository.findAllByActiveTrue(pageable);
         }
 
         Page<UserListDTO> userDTOs = users.map(UserListDTO::new);
