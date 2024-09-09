@@ -41,6 +41,9 @@ public class AnimalBreed {
     @Column(name = "deleted_by_id")
     private Long deletedById;
 
+    @Column(name = "active", nullable = false)
+    private Boolean active = true; // Default to true
+
     public AnimalBreed(AnimalBreedDTO data) {
         this.id = data.id();
     }
@@ -54,6 +57,7 @@ public class AnimalBreed {
         this.name = data.name();
         this.animalType = new AnimalType(data.animalTypeId());
         this.createdById = data.createdById();
+        this.active = true; // Mark as active by default
     }
 
     public void updateInformation(AnimalBreedUpdateDTO data) {
@@ -61,5 +65,10 @@ public class AnimalBreed {
             this.name = data.name();
         }
     }
-}
 
+    // Method to deactivate an AnimalBreed
+    public void deactivate() {
+        this.deletedAt = LocalDateTime.now();
+        this.active = false;
+    }
+}

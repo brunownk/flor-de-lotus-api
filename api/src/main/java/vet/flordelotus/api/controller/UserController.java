@@ -4,6 +4,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,10 +59,23 @@ public class UserController {
         return ResponseEntity.created(uri).body(new UserDetailDTO(user));
     }
 
-
     @GetMapping
-    public List<UserListDTO> listUsers() {
-        return repository.findAll().stream().map(UserListDTO::new).toList();
+    public ResponseEntity<Page<UserListDTO>> listUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "false") boolean withDeleted) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users;
+
+        if (withDeleted) {
+            users = repository.findAll(pageable); // Retrieves all users, including inactive ones
+        } else {
+            users = repository.findAllByActiveTrue(pageable); // Retrieves only active users
+        }
+
+        Page<UserListDTO> userDTOs = users.map(UserListDTO::new);
+        return ResponseEntity.ok(userDTOs);
     }
 
     @GetMapping("/{id}/animals")
@@ -84,7 +100,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity deactivateUser(@PathVariable Long id){
+    public ResponseEntity deactivateUser(@PathVariable Long id) {
         var user = repository.getReferenceById(id);
         user.deactivate();
         return ResponseEntity.noContent().build();

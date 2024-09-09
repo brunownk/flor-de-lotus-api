@@ -4,6 +4,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -14,8 +17,6 @@ import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.entity.Veterinarian;
 import vet.flordelotus.api.domain.repository.UserRepository;
 import vet.flordelotus.api.domain.repository.VeterinarianRepository;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("veterinarians")
@@ -43,8 +44,22 @@ public class VetController {
     }
 
     @GetMapping
-    public List<VetListDTO> listVet() {
-        return repository.findAll().stream().map(VetListDTO::new).toList();
+    public ResponseEntity<Page<VetListDTO>> listVet(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "false") boolean withDeleted) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Veterinarian> vets;
+
+        if (withDeleted) {
+            vets = repository.findAll(pageable); // Retrieves all veterinarians, including inactive ones
+        } else {
+            vets = repository.findByActiveTrue(pageable); // Retrieves only active veterinarians
+        }
+
+        Page<VetListDTO> vetDTOs = vets.map(VetListDTO::new);
+        return ResponseEntity.ok(vetDTOs);
     }
 
     @GetMapping("/{id}")

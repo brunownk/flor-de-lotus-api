@@ -35,8 +35,13 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private CancelAppointmentReason cancelAppointmentReason;
 
+    // Method to cancel the appointment
     public void cancel(CancelAppointmentReason reason) {
         this.cancelAppointmentReason = reason;
     }
 
+    // Utility method to check if the appointment is active (not canceled)
+    public boolean isActive() {
+        return this.cancelAppointmentReason == null;
+    }
 }

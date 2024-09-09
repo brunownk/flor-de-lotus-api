@@ -12,10 +12,18 @@ import vet.flordelotus.api.enums.vet.Specialty;
 import java.time.LocalDateTime;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    // Find user by username
     UserDetails findByUsername(String username);
+
+    // Find user by email
     UserDetails findByEmail(String email);
 
-    Page<User> findAllByActiveTrue(Pageable paginacao);
+    // Find all active users with pagination
+    Page<User> findAllByActiveTrue(Pageable pageable);
+
+    // Find all users with pagination
+    Page<User> findAll(Pageable pageable);
 
     @Query("""
     select v from Veterinarian v
@@ -31,11 +39,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     )
     order by random()
     limit 1
-""")
+    """)
     Veterinarian chooseRandomVetFreeOnDate(Specialty specialty, LocalDateTime date);
 
     @Query("select v.user.active from Veterinarian v where v.id = :id")
-
     Boolean findActiveById(Long id);
-
 }

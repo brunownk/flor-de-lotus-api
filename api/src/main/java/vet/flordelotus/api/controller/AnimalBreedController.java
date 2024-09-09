@@ -3,6 +3,9 @@ package vet.flordelotus.api.controller;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +16,6 @@ import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedListDTO;
 import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedUpdateDTO;
 import vet.flordelotus.api.domain.entity.AnimalBreed;
 import vet.flordelotus.api.domain.repository.AnimalBreedRepository;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/animal-breeds")
@@ -36,8 +37,15 @@ public class AnimalBreedController {
     }
 
     @GetMapping
-    public List<AnimalBreedListDTO> listAnimalBreeds() {
-        return repository.findAll().stream().map(AnimalBreedListDTO::new).toList();
+    public ResponseEntity<Page<AnimalBreedListDTO>> listAnimalBreeds(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AnimalBreed> breeds = repository.findAll(pageable);
+
+        Page<AnimalBreedListDTO> breedDTOs = breeds.map(AnimalBreedListDTO::new);
+        return ResponseEntity.ok(breedDTOs);
     }
 
     @PutMapping("/{id}")
@@ -61,5 +69,3 @@ public class AnimalBreedController {
         return ResponseEntity.ok(new AnimalBreedDetailDTO(animalBreed));
     }
 }
-
-

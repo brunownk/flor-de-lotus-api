@@ -64,10 +64,11 @@ public class Animal {
     @Column(name = "deleted_by_id")
     private Long deletedById;
 
-    private Boolean active;
+    @Column(name = "active", nullable = false)
+    private Boolean active = true; // Default to true
 
     public Animal(AnimalCreateDTO data) {
-        this.active = true;
+        this.active = true; // Mark as active by default
         this.name = data.name();
         this.user = getUser();
         this.breed = new AnimalBreed(data.animalBreedId());
@@ -108,5 +109,8 @@ public class Animal {
         this.active = false;
     }
 
+    // Utility method to check if the animal is active
+    public boolean isActive() {
+        return Boolean.TRUE.equals(this.active);
+    }
 }
-

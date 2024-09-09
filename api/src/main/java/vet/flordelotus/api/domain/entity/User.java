@@ -24,9 +24,9 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String username;
     private String password;
-
     private String name;
     private String email;
 
@@ -36,7 +36,8 @@ public class User implements UserDetails {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    private Boolean active;
+    @Column(name = "active", nullable = false)
+    private Boolean active = true; // Default to true
 
     @OneToMany(mappedBy = "user")
     private List<Animal> animals;
@@ -55,12 +56,12 @@ public class User implements UserDetails {
     }
 
     public User(UserCreateDTO data) {
-        this.active = true;
+        this.active = true; // Ensure active is set to true when a user is created
         this.username = data.username();
         this.password = data.password();
         this.name = data.name();
         this.email = data.email();
-        this.createdAt = (LocalDateTime.now());
+        this.createdAt = LocalDateTime.now();
     }
 
     public void updateInformations(UserUpdateDTO data) {
@@ -112,13 +113,11 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return Boolean.TRUE.equals(active); // Ensure the account is enabled only if it is active
     }
 
     public void deactivate() {
         this.deletedAt = LocalDateTime.now();
         this.active = false;
     }
-
 }
-

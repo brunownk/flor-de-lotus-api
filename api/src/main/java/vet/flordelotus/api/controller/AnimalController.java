@@ -1,9 +1,11 @@
 package vet.flordelotus.api.controller;
 
-
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +18,6 @@ import vet.flordelotus.api.domain.entity.Animal;
 import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.AnimalRepository;
 import vet.flordelotus.api.domain.repository.UserRepository;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/animals")
@@ -32,26 +32,41 @@ public class AnimalController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity createAnimal(@RequestBody @Valid AnimalCreateDTO data, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<AnimalDetailDTO> createAnimal(@RequestBody @Valid AnimalCreateDTO data, UriComponentsBuilder uriBuilder) {
         User user = userRepository.findById(data.userId()).orElseThrow(() -> new RuntimeException("User not found"));
 
         var animal = new Animal(data);
         animal.setUser(user);
         repository.save(animal);
 
-        var uri = uriBuilder.path("/animal/{id}").buildAndExpand(animal.getId()).toUri();
+        var uri = uriBuilder.path("/animals/{id}").buildAndExpand(animal.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new AnimalDetailDTO(animal));
     }
 
     @GetMapping
-    public List<AnimalListDTO> listAnimals() {
-        return repository.findAll().stream().map(AnimalListDTO::new).toList();
+    public ResponseEntity<Page<AnimalListDTO>> listAnimals(
+            @RequestParam(required = false, defaultValue = "") String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "false") boolean withDeleted) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Animal> animals;
+
+        if (withDeleted) {
+            animals = repository.findAll(pageable); // Retrieves all animals, including inactive ones
+        } else {
+            animals = repository.findByIsActive(true, pageable); // Retrieves only active animals
+        }
+
+        Page<AnimalListDTO> animalDTOs = animals.map(AnimalListDTO::new);
+        return ResponseEntity.ok(animalDTOs);
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity updateAnimal(@RequestBody @Valid AnimalUpdateDTO data) {
+    public ResponseEntity<AnimalDetailDTO> updateAnimal(@RequestBody @Valid AnimalUpdateDTO data) {
         var animal = repository.getReferenceById(data.id());
         animal.updateInformations(data);
         return ResponseEntity.ok(new AnimalDetailDTO(animal));
@@ -59,14 +74,14 @@ public class AnimalController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity deactivateAnimal(@PathVariable Long id){
+    public ResponseEntity<Void> deactivateAnimal(@PathVariable Long id) {
         var animal = repository.getReferenceById(id);
-        animal.deactivate();
+        animal.deactivate();  // Assuming 'deactivate' is a method that marks the animal as deleted
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getAnimal(@PathVariable Long id) {
+    public ResponseEntity<AnimalDetailDTO> getAnimal(@PathVariable Long id) {
         var animal = repository.getReferenceById(id);
         return ResponseEntity.ok(new AnimalDetailDTO(animal));
     }
