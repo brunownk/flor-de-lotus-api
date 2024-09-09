@@ -5,9 +5,11 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import vet.flordelotus.api.ExceptionValidation;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalDetailDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserCreateDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserDetailDTO;
@@ -32,6 +34,17 @@ public class UserController {
     @PostMapping
     @Transactional
     public ResponseEntity<UserDetailDTO> createUser(@RequestBody @Valid UserCreateDTO data, UriComponentsBuilder uriBuilder) {
+
+        UserDetails existingUserByUsername = repository.findByUsername(data.username());
+        if (existingUserByUsername != null) {
+            throw new ExceptionValidation("Username already exists.");
+        }
+
+        UserDetails existingUserByEmail = repository.findByEmail(data.email());
+        if (existingUserByEmail != null) {
+            throw new ExceptionValidation("Email already exists.");
+        }
+
         String encodedPassword = passwordEncoder.encode(data.password());
 
         var user = new User(data);

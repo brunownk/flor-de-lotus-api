@@ -12,7 +12,8 @@ import vet.flordelotus.api.enums.vet.Specialty;
 import java.time.LocalDateTime;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    UserDetails findByLogin(String login);
+    UserDetails findByUsername(String username);
+    UserDetails findByEmail(String email);
 
     Page<User> findAllByActiveTrue(Pageable paginacao);
 

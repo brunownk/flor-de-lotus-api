@@ -23,7 +23,7 @@ public class TokenService {
             var algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer("Vet.flordelotus API")
-                    .withSubject(user.getLogin())
+                    .withSubject(user.getUsername())
                     .withExpiresAt(expirationDate())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {

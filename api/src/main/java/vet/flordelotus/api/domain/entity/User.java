@@ -24,11 +24,11 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String login;
+    private String username;
     private String password;
 
     private String name;
-    private String username;
+    private String email;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -47,15 +47,25 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @PrePersist
+    public void prePersist() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
+
     public User(UserCreateDTO data) {
         this.active = true;
-        this.login = data.login();
+        this.username = data.username();
         this.password = data.password();
+        this.name = data.name();
+        this.email = data.email();
+        this.createdAt = (LocalDateTime.now());
     }
 
     public void updateInformations(UserUpdateDTO data) {
-        if (data.login() != null) {
-            this.login = data.login();
+        if (data.username() != null) {
+            this.username = data.username();
         }
         if (data.password() != null) {
             this.password = data.password();
@@ -63,8 +73,8 @@ public class User implements UserDetails {
         if (data.name() != null) {
             this.name = data.name();
         }
-        if (data.username() != null) {
-            this.username = data.username();
+        if (data.email() != null) {
+            this.email = data.email();
         }
     }
 
@@ -82,7 +92,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return login;
+        return username;
     }
 
     @Override
@@ -106,6 +116,7 @@ public class User implements UserDetails {
     }
 
     public void deactivate() {
+        this.deletedAt = LocalDateTime.now();
         this.active = false;
     }
 

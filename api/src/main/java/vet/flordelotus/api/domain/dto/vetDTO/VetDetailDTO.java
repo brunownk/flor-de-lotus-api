@@ -7,8 +7,8 @@ public record VetDetailDTO(
         Long id,
         String crmv,
         Specialty specialty,
-        String login,
         String username,
+        String email,
         String name)  {
 
     public VetDetailDTO(Veterinarian veterinarian) {
@@ -16,8 +16,8 @@ public record VetDetailDTO(
                 veterinarian.getId(),
                 veterinarian.getCrmv(),
                 veterinarian.getSpecialty(),
-                veterinarian.getUser().getLogin(),
                 veterinarian.getUser().getUsername(),
+                veterinarian.getUser().getEmail(),
                 veterinarian.getUser().getName());
     }
 }
