@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -61,11 +63,11 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<UserListDTO>> listUsers(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean withDeleted) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page-1, size);
         Page<User> users;
 
         if (withDeleted) {
@@ -110,5 +112,22 @@ public class UserController {
     public ResponseEntity detailUser(@PathVariable Long id) {
         var user = repository.getReferenceById(id);
         return ResponseEntity.ok(new UserDetailDTO(user));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDetailDTO> getCurrentUser(Authentication authentication) {
+        String username = authentication.getName();
+
+        UserDetails userDetails = repository.findByUsername(username);
+
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        User user = (User) userDetails;
+
+        UserDetailDTO userDetailDTO = new UserDetailDTO(user);
+
+        return ResponseEntity.ok(userDetailDTO);
     }
 }
