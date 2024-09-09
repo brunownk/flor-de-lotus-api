@@ -2,7 +2,7 @@ package vet.flordelotus.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vet.flordelotus.api.ExceptionValidation;
+import vet.flordelotus.api.infra.exception.ExceptionValidation;
 import vet.flordelotus.api.domain.dto.appointment.AppointmentCancelDTO;
 import vet.flordelotus.api.domain.dto.appointment.AppointmentDetailDTO;
 import vet.flordelotus.api.domain.dto.appointment.AppointmentScheduleDTO;

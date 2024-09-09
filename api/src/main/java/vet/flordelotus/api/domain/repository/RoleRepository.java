@@ -5,4 +5,6 @@ import vet.flordelotus.api.domain.entity.Role;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
     Role findByName(String name);
+
+    boolean existsByName(String roleName);
 }

@@ -1,7 +1,7 @@
 package vet.flordelotus.api.validators.schedule;
 
 import org.springframework.stereotype.Component;
-import vet.flordelotus.api.ExceptionValidation;
+import vet.flordelotus.api.infra.exception.ExceptionValidation;
 import vet.flordelotus.api.domain.dto.appointment.AppointmentScheduleDTO;
 import vet.flordelotus.api.domain.repository.AppointmentSchedulingValidator;
 

@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import vet.flordelotus.api.ExceptionValidation;
+import vet.flordelotus.api.infra.exception.ExceptionValidation;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalDetailDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserCreateDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserDetailDTO;

@@ -2,7 +2,7 @@ package vet.flordelotus.api.validators.cancel_schedule;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import vet.flordelotus.api.ExceptionValidation;
+import vet.flordelotus.api.infra.exception.ExceptionValidation;
 import vet.flordelotus.api.domain.dto.appointment.AppointmentCancelDTO;
 import vet.flordelotus.api.domain.repository.AppointmentCancellationValidator;
 import vet.flordelotus.api.domain.repository.AppointmentRepository;
