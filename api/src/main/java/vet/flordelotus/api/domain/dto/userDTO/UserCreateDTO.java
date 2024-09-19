@@ -2,7 +2,9 @@ package vet.flordelotus.api.domain.dto.userDTO;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import vet.flordelotus.api.enums.role.Role;
 
 public record UserCreateDTO(
         @NotBlank(message = "The username is required.")
@@ -16,6 +18,8 @@ public record UserCreateDTO(
         String name,
         @NotBlank(message = "The email is required.")
         @Email(message = "The email must be valid.")
-        String email
+        String email,
+        @NotNull(message = "The role is required.")
+        Role role
 ) {}
 

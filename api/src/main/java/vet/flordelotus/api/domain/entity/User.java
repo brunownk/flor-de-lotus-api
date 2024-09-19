@@ -7,10 +7,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import vet.flordelotus.api.domain.dto.userDTO.UserCreateDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserUpdateDTO;
+import vet.flordelotus.api.enums.role.Role;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Table(name = "users")
 @Entity(name = "User")
@@ -42,11 +42,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Animal> animals;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     @PrePersist
     public void prePersist() {
@@ -61,6 +59,7 @@ public class User implements UserDetails {
         this.password = data.password();
         this.name = data.name();
         this.email = data.email();
+        this.role = data.role();
         this.createdAt = LocalDateTime.now();
     }
 
@@ -81,9 +80,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-                .collect(Collectors.toList());
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

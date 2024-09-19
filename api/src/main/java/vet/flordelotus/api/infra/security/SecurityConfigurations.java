@@ -38,7 +38,9 @@ public class SecurityConfigurations {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers("/login").permitAll();
-                    req.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "VETERINARIAN");
+                    req.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN");
+                    req.requestMatchers("/animals/**").hasAnyRole("USER", "ADMIN", "VETERINARIAN");
+                    req.requestMatchers("/veterinarians/**").hasAnyRole( "ADMIN", "VETERINARIAN");
                     req.requestMatchers("/animals/**").hasAnyRole("USER", "ADMIN", "VETERINARIAN");
                     req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
                     req.anyRequest().authenticated();

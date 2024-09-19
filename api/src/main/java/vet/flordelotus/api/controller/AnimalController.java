@@ -47,11 +47,11 @@ public class AnimalController {
     @GetMapping
     public ResponseEntity<Page<AnimalListDTO>> listAnimals(
             @RequestParam(required = false, defaultValue = "") String search,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean withDeleted) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page-1, size);
         Page<Animal> animals;
 
         if (withDeleted) {

@@ -45,11 +45,11 @@ public class VetController {
 
     @GetMapping
     public ResponseEntity<Page<VetListDTO>> listVet(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean withDeleted) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page-1, size);
         Page<Veterinarian> vets;
 
         if (withDeleted) {
