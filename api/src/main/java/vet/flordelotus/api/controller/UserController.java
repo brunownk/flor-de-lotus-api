@@ -18,7 +18,6 @@ import vet.flordelotus.api.infra.exception.ExceptionValidation;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalDetailDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserCreateDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserDetailDTO;
-import vet.flordelotus.api.domain.dto.userDTO.UserListDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserUpdateDTO;
 import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.UserRepository;
@@ -62,7 +61,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<UserListDTO>> listUsers(
+    public ResponseEntity<Page<UserDetailDTO>> listUsers(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean withDeleted) {
@@ -76,7 +75,7 @@ public class UserController {
             users = repository.findAllByActiveTrue(pageable);
         }
 
-        Page<UserListDTO> userDTOs = users.map(UserListDTO::new);
+        Page<UserDetailDTO> userDTOs = users.map(UserDetailDTO::new);
         return ResponseEntity.ok(userDTOs);
     }
 
