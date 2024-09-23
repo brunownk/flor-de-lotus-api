@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +15,13 @@ import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedCreateDTO;
 import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedDetailDTO;
 import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedListDTO;
 import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedUpdateDTO;
+import vet.flordelotus.api.domain.dto.userDTO.UserDetailDTO;
 import vet.flordelotus.api.domain.entity.AnimalBreed;
+import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.AnimalBreedRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/animal-breeds")
@@ -67,5 +73,20 @@ public class AnimalBreedController {
     public ResponseEntity getAnimalBreed(@PathVariable Long id) {
         var animalBreed = repository.getReferenceById(id);
         return ResponseEntity.ok(new AnimalBreedDetailDTO(animalBreed));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<AnimalBreedDetailDTO>> search(@RequestParam String search) {
+        List<AnimalBreed> animalBreedsList = repository.searchByName(search);
+
+        if (animalBreedsList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if no animal breeds found
+        }
+
+        List<AnimalBreedDetailDTO> animalBreedDTOs = animalBreedsList.stream()
+                .map(breed -> new AnimalBreedDetailDTO(breed)) // Assuming AnimalBreedDTO takes an AnimalBreed object
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(animalBreedDTOs); // Return 200 OK with the animal breed detail DTOs
     }
 }

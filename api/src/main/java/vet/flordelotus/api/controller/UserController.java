@@ -23,6 +23,7 @@ import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -66,7 +67,7 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean withDeleted) {
 
-        Pageable pageable = PageRequest.of(page-1, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
         Page<User> users;
 
         if (withDeleted) {
@@ -129,4 +130,20 @@ public class UserController {
 
         return ResponseEntity.ok(userDetailDTO);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserDetailDTO>> search(@RequestParam String search) {
+        List<User> userDetailsList = repository.searchByNameUsernameOrEmail(search);
+
+        if (userDetailsList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        List<UserDetailDTO> userDetailDTOs = userDetailsList.stream()
+                .map(user -> new UserDetailDTO(user))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(userDetailDTOs);
+    }
 }
+

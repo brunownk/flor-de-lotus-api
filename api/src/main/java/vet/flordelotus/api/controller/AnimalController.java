@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +15,14 @@ import vet.flordelotus.api.domain.dto.animalDTO.AnimalCreateDTO;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalDetailDTO;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalListDTO;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalUpdateDTO;
+import vet.flordelotus.api.domain.dto.userDTO.UserDetailDTO;
 import vet.flordelotus.api.domain.entity.Animal;
 import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.AnimalRepository;
 import vet.flordelotus.api.domain.repository.UserRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/animals")
@@ -84,5 +89,20 @@ public class AnimalController {
     public ResponseEntity<AnimalDetailDTO> getAnimal(@PathVariable Long id) {
         var animal = repository.getReferenceById(id);
         return ResponseEntity.ok(new AnimalDetailDTO(animal));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<AnimalDetailDTO>> search(@RequestParam String search) {
+        List<Animal> animalsList = repository.searchByNameUsernameTypeOrBreed(search);
+
+        if (animalsList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if no animals found
+        }
+
+        List<AnimalDetailDTO> animalDTOs = animalsList.stream()
+                .map(animal -> new AnimalDetailDTO(animal)) // Assuming AnimalDTO takes an Animal object
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(animalDTOs); // Return 200 OK with the animal detail DTOs
     }
 }

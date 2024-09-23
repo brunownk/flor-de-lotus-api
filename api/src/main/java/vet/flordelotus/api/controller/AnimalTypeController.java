@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +15,13 @@ import vet.flordelotus.api.domain.dto.animalTypeDTO.AnimalTypeCreateDTO;
 import vet.flordelotus.api.domain.dto.animalTypeDTO.AnimalTypeDetailDTO;
 import vet.flordelotus.api.domain.dto.animalTypeDTO.AnimalTypeListDTO;
 import vet.flordelotus.api.domain.dto.animalTypeDTO.AnimalTypeUpdateDTO;
+import vet.flordelotus.api.domain.dto.userDTO.UserDetailDTO;
 import vet.flordelotus.api.domain.entity.AnimalType;
+import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.AnimalTypeRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/animal-types")
@@ -70,5 +76,20 @@ public class AnimalTypeController {
     public ResponseEntity getAnimalType(@PathVariable Long id) {
         var animalType = repository.getReferenceById(id);
         return ResponseEntity.ok(new AnimalTypeDetailDTO(animalType));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<AnimalTypeDetailDTO>> search(@RequestParam String search) {
+        List<AnimalType> animalTypesList = repository.searchByName(search);
+
+        if (animalTypesList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if no animal types found
+        }
+
+        List<AnimalTypeDetailDTO> animalTypeDTOs = animalTypesList.stream()
+                .map(animalType -> new AnimalTypeDetailDTO(animalType)) // Assuming AnimalTypeDTO takes an AnimalType object
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(animalTypeDTOs); // Return 200 OK with the animal type detail DTOs
     }
 }
