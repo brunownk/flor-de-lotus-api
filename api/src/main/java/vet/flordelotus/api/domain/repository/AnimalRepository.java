@@ -20,5 +20,16 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
             "OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(b.name) LIKE LOWER(CONCAT('%', :search, '%'))")
-    List<Animal> searchByNameUsernameTypeOrBreed(@Param("search") String search);
+    Page<Animal> searchByNameUsernameTypeOrBreed(@Param("search") String search, Pageable pageable);
+
+    @Query("SELECT a FROM Animal a " +
+            "JOIN a.user u " +
+            "JOIN a.type t " +
+            "JOIN a.breed b " +
+            "WHERE (LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(b.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "AND a.active = true")
+    Page<Animal> searchByNameUsernameTypeOrBreedAndActiveTrue(String search, Pageable pageable);
 }

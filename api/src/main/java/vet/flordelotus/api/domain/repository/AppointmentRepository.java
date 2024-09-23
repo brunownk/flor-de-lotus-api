@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import vet.flordelotus.api.domain.entity.Appointment;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
@@ -30,6 +29,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
                     (a.date >= COALESCE(:startDate, a.date)) AND
                     (a.date <= COALESCE(:endDate, a.date))
             """)
-    List<Appointment> searchByDateRange(@Param("startDate") LocalDateTime startDate,
-                                        @Param("endDate") LocalDateTime endDate);
+    Page<Appointment> searchByDateRange(@Param("startDate") LocalDateTime startDate,
+                                        @Param("endDate") LocalDateTime endDate,
+                                        Pageable pageable);
 }

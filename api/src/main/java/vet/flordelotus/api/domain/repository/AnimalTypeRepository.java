@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface AnimalTypeRepository extends JpaRepository<AnimalType, Long> {
 
-    @Query("SELECT at FROM AnimalType at WHERE LOWER(at.name) LIKE LOWER(CONCAT('%', :search, '%'))")
-    List<AnimalType> searchByName(@Param("search") String search);
+    @Query("SELECT a FROM AnimalType a WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%'))")
+    Page<AnimalType> searchByName(@Param("search") String search, Pageable pageable);
+
 }

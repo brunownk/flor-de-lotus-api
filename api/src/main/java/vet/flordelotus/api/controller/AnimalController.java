@@ -50,22 +50,32 @@ public class AnimalController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<AnimalListDTO>> listAnimals(
+    public ResponseEntity<Page<AnimalDetailDTO>> listAnimals(
             @RequestParam(required = false, defaultValue = "") String search,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean withDeleted) {
 
-        Pageable pageable = PageRequest.of(page-1, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
         Page<Animal> animals;
 
-        if (withDeleted) {
-            animals = repository.findAll(pageable); // Retrieves all animals, including inactive ones
+        if (search != null && !search.isEmpty()) {
+            // Se um termo de busca for fornecido, busca pelos animais que correspondem ao termo
+            if (withDeleted) {
+                animals = repository.searchByNameUsernameTypeOrBreed(search, pageable); // Busca todos, incluindo inativos
+            } else {
+                animals = repository.searchByNameUsernameTypeOrBreedAndActiveTrue(search, pageable); // Busca apenas ativos
+            }
         } else {
-            animals = repository.findAllByActiveTrue(true, pageable); // Retrieves only active animals
+            // Se não houver busca, retorna todos os animais
+            if (withDeleted) {
+                animals = repository.findAll(pageable);
+            } else {
+                animals = repository.findAllByActiveTrue(true, pageable);
+            }
         }
 
-        Page<AnimalListDTO> animalDTOs = animals.map(AnimalListDTO::new);
+        Page<AnimalDetailDTO> animalDTOs = animals.map(AnimalDetailDTO::new);
         return ResponseEntity.ok(animalDTOs);
     }
 
@@ -89,20 +99,5 @@ public class AnimalController {
     public ResponseEntity<AnimalDetailDTO> getAnimal(@PathVariable Long id) {
         var animal = repository.getReferenceById(id);
         return ResponseEntity.ok(new AnimalDetailDTO(animal));
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<AnimalDetailDTO>> search(@RequestParam String search) {
-        List<Animal> animalsList = repository.searchByNameUsernameTypeOrBreed(search);
-
-        if (animalsList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if no animals found
-        }
-
-        List<AnimalDetailDTO> animalDTOs = animalsList.stream()
-                .map(animal -> new AnimalDetailDTO(animal)) // Assuming AnimalDTO takes an Animal object
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(animalDTOs); // Return 200 OK with the animal detail DTOs
     }
 }

@@ -74,21 +74,18 @@ public class UserController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean withDeleted,
-            @RequestParam(required = false) String search) { // Novo parâmetro de busca
+            @RequestParam(required = false) String search) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<User> users;
 
-        // Verifica se há um termo de busca
         if (search != null && !search.isEmpty()) {
-            // Filtra com base na busca
             if (withDeleted) {
                 users = repository.searchByNameUsernameOrEmail(search, pageable);
             } else {
                 users = repository.searchByNameUsernameOrEmailAndActiveTrue(search, pageable);
             }
         } else {
-            // Se não houver busca, busca normalmente
             if (withDeleted) {
                 users = repository.findAll(pageable);
             } else {

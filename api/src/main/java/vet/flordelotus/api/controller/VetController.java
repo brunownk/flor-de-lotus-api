@@ -49,21 +49,30 @@ public class VetController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<VetListDTO>> listVet(
+    public ResponseEntity<Page<VetDetailDTO>> listVet(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "false") boolean withDeleted) {
+            @RequestParam(defaultValue = "false") boolean withDeleted,
+            @RequestParam(required = false) String search) {
 
-        Pageable pageable = PageRequest.of(page-1, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
         Page<Veterinarian> vets;
 
-        if (withDeleted) {
-            vets = repository.findAll(pageable); // Retrieves all veterinarians, including inactive ones
+        if (search != null && !search.isEmpty()) {
+            if (withDeleted) {
+                vets = repository.searchByCrmvUsernameOrEmail(search, pageable);
+            } else {
+                vets = repository.searchByCrmvUsernameOrEmailAndActiveTrue(search, pageable);
+            }
         } else {
-            vets = repository.findAllByActiveTrue(pageable); // Retrieves only active veterinarians
+            if (withDeleted) {
+                vets = repository.findAll(pageable);
+            } else {
+                vets = repository.findAllByActiveTrue(pageable);
+            }
         }
 
-        Page<VetListDTO> vetDTOs = vets.map(VetListDTO::new);
+        Page<VetDetailDTO> vetDTOs = vets.map(VetDetailDTO::new);
         return ResponseEntity.ok(vetDTOs);
     }
 
@@ -71,21 +80,6 @@ public class VetController {
     public ResponseEntity detailVet(@PathVariable Long id) {
         var vet = repository.getReferenceById(id);
         return ResponseEntity.ok(new VetDetailDTO(vet));
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<VetDetailDTO>> search(@RequestParam String search) {
-        List<Veterinarian> veterinariansList = repository.searchByCrmvUsernameOrEmail(search);
-
-        if (veterinariansList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if no veterinarians found
-        }
-
-        List<VetDetailDTO> veterinarianDetailDTOs = veterinariansList.stream()
-                .map(veterinarian -> new VetDetailDTO(veterinarian)) // Assuming VeterinarianDetailDTO takes a Veterinarian object
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(veterinarianDetailDTOs); // Return 200 OK with the veterinarian detail DTOs
     }
 }
 

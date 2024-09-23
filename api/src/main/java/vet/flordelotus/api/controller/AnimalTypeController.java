@@ -43,18 +43,26 @@ public class AnimalTypeController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<AnimalTypeListDTO>> listAnimalTypes(
+    public ResponseEntity<Page<AnimalTypeDetailDTO>> listAnimalTypes(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
 
-        Pageable pageable = PageRequest.of(page-1, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
         Page<AnimalType> types;
 
-        types = repository.findAll(pageable);
+        if (search != null && !search.isEmpty()) {
+            // Se um termo de busca for fornecido, busca pelos tipos de animais que correspondem ao termo
+            types = repository.searchByName(search, pageable);
+        } else {
+            // Se não houver busca, retorna todos os tipos de animais
+            types = repository.findAll(pageable);
+        }
 
-        Page<AnimalTypeListDTO> typeDTOs = types.map(AnimalTypeListDTO::new);
+        Page<AnimalTypeDetailDTO> typeDTOs = types.map(AnimalTypeDetailDTO::new);
         return ResponseEntity.ok(typeDTOs);
     }
+
 
     @PutMapping("/{id}")
     @Transactional
@@ -76,20 +84,5 @@ public class AnimalTypeController {
     public ResponseEntity getAnimalType(@PathVariable Long id) {
         var animalType = repository.getReferenceById(id);
         return ResponseEntity.ok(new AnimalTypeDetailDTO(animalType));
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<AnimalTypeDetailDTO>> search(@RequestParam String search) {
-        List<AnimalType> animalTypesList = repository.searchByName(search);
-
-        if (animalTypesList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if no animal types found
-        }
-
-        List<AnimalTypeDetailDTO> animalTypeDTOs = animalTypesList.stream()
-                .map(animalType -> new AnimalTypeDetailDTO(animalType)) // Assuming AnimalTypeDTO takes an AnimalType object
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(animalTypeDTOs); // Return 200 OK with the animal type detail DTOs
     }
 }

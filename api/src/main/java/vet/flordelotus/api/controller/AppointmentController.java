@@ -52,36 +52,30 @@ public class AppointmentController {
     public ResponseEntity<Page<AppointmentDetailDTO>> listAppointments(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "false") boolean withCanceled) {
+            @RequestParam(defaultValue = "false") boolean withCanceled,
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate) {
 
-        Pageable pageable = PageRequest.of(page-1, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
         Page<Appointment> appointments;
 
         if (withCanceled) {
-            appointments = appointmentRepository.findAll(pageable); // Retrieves all appointments, including canceled ones
+            // Se startDate ou endDate forem fornecidos, filtra por data
+            if (startDate != null || endDate != null) {
+                appointments = appointmentRepository.searchByDateRange(startDate, endDate, pageable);
+            } else {
+                appointments = appointmentRepository.findAll(pageable); // Retorna todos os agendamentos, incluindo cancelados
+            }
         } else {
-            appointments = appointmentRepository.findByCancelAppointmentReasonIsNull(pageable); // Retrieves only active appointments
+            // Se startDate ou endDate forem fornecidos, filtra por data
+            if (startDate != null || endDate != null) {
+                appointments = appointmentRepository.searchByDateRange(startDate, endDate, pageable);
+            } else {
+                appointments = appointmentRepository.findByCancelAppointmentReasonIsNull(pageable); // Retorna apenas agendamentos ativos
+            }
         }
 
         Page<AppointmentDetailDTO> appointmentDTOs = appointments.map(AppointmentDetailDTO::new);
         return ResponseEntity.ok(appointmentDTOs);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<AppointmentDetailDTO>> searchAppointments(
-            @RequestParam(required = false) LocalDateTime startDate,
-            @RequestParam(required = false) LocalDateTime endDate) {
-
-        List<Appointment> appointmentsList = appointmentRepository.searchByDateRange(startDate, endDate);
-
-        if (appointmentsList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if no appointments found
-        }
-
-        List<AppointmentDetailDTO> appointmentDTOs = appointmentsList.stream()
-                .map(appointment -> new AppointmentDetailDTO(appointment)) // Assuming AppointmentDTO takes an Appointment object
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(appointmentDTOs); // Return 200 OK with the appointment detail DTOs
     }
 }

@@ -43,14 +43,23 @@ public class AnimalBreedController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<AnimalBreedListDTO>> listAnimalBreeds(
+    public ResponseEntity<Page<AnimalBreedDetailDTO>> listAnimalBreeds(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
 
-        Pageable pageable = PageRequest.of(page-1, size);
-        Page<AnimalBreed> breeds = repository.findAll(pageable);
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<AnimalBreed> breeds;
 
-        Page<AnimalBreedListDTO> breedDTOs = breeds.map(AnimalBreedListDTO::new);
+        if (search != null && !search.isEmpty()) {
+            // Se um termo de busca for fornecido, busca pelas raças de animais que correspondem ao termo
+            breeds = repository.searchByName(search, pageable);
+        } else {
+            // Se não houver busca, retorna todas as raças de animais
+            breeds = repository.findAll(pageable);
+        }
+
+        Page<AnimalBreedDetailDTO> breedDTOs = breeds.map(AnimalBreedDetailDTO::new);
         return ResponseEntity.ok(breedDTOs);
     }
 
@@ -73,20 +82,5 @@ public class AnimalBreedController {
     public ResponseEntity getAnimalBreed(@PathVariable Long id) {
         var animalBreed = repository.getReferenceById(id);
         return ResponseEntity.ok(new AnimalBreedDetailDTO(animalBreed));
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<AnimalBreedDetailDTO>> search(@RequestParam String search) {
-        List<AnimalBreed> animalBreedsList = repository.searchByName(search);
-
-        if (animalBreedsList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if no animal breeds found
-        }
-
-        List<AnimalBreedDetailDTO> animalBreedDTOs = animalBreedsList.stream()
-                .map(breed -> new AnimalBreedDetailDTO(breed)) // Assuming AnimalBreedDTO takes an AnimalBreed object
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(animalBreedDTOs); // Return 200 OK with the animal breed detail DTOs
     }
 }
