@@ -76,6 +76,9 @@ public class User implements UserDetails {
         if (data.email() != null) {
             this.email = data.email();
         }
+        if (data.role() != null) {
+            this.role = data.role();
+        }
     }
 
     @Override

@@ -19,7 +19,6 @@ public record UserCreateDTO(
         @NotBlank(message = "The email is required.")
         @Email(message = "The email must be valid.")
         String email,
-        @NotNull(message = "The role is required.")
         Role role
 ) {}
 

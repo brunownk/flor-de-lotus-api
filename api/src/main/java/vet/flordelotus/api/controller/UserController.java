@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import vet.flordelotus.api.enums.role.Role;
 import vet.flordelotus.api.infra.exception.ExceptionValidation;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalDetailDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserCreateDTO;
@@ -50,10 +51,17 @@ public class UserController {
             throw new ExceptionValidation("Email already exists.");
         }
 
+
         String encodedPassword = passwordEncoder.encode(data.password());
 
         var user = new User(data);
         user.setPassword(encodedPassword);
+
+        if (data.role() == null) {
+            user.setRole(Role.USER);
+        } else {
+            user.setRole(data.role());
+        }
 
         repository.save(user);
 
@@ -65,15 +73,27 @@ public class UserController {
     public ResponseEntity<Page<UserDetailDTO>> listUsers(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "false") boolean withDeleted) {
+            @RequestParam(defaultValue = "false") boolean withDeleted,
+            @RequestParam(required = false) String search) { // Novo parâmetro de busca
 
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<User> users;
 
-        if (withDeleted) {
-            users = repository.findAll(pageable);
+        // Verifica se há um termo de busca
+        if (search != null && !search.isEmpty()) {
+            // Filtra com base na busca
+            if (withDeleted) {
+                users = repository.searchByNameUsernameOrEmail(search, pageable);
+            } else {
+                users = repository.searchByNameUsernameOrEmailAndActiveTrue(search, pageable);
+            }
         } else {
-            users = repository.findAllByActiveTrue(pageable);
+            // Se não houver busca, busca normalmente
+            if (withDeleted) {
+                users = repository.findAll(pageable);
+            } else {
+                users = repository.findAllByActiveTrue(pageable);
+            }
         }
 
         Page<UserDetailDTO> userDTOs = users.map(UserDetailDTO::new);
@@ -130,20 +150,4 @@ public class UserController {
 
         return ResponseEntity.ok(userDetailDTO);
     }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<UserDetailDTO>> search(@RequestParam String search) {
-        List<User> userDetailsList = repository.searchByNameUsernameOrEmail(search);
-
-        if (userDetailsList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        List<UserDetailDTO> userDetailDTOs = userDetailsList.stream()
-                .map(user -> new UserDetailDTO(user))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(userDetailDTOs);
-    }
 }
-

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import vet.flordelotus.api.enums.role.Role;
 
 public record UserUpdateDTO(
         Long id,
@@ -16,6 +17,8 @@ public record UserUpdateDTO(
 
         String name,
         @Email(message = "The email must be valid.")
-        String email
+        String email,
+        Role role
+
 ) {}
 

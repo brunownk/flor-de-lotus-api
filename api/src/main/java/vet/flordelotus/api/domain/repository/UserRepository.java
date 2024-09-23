@@ -21,10 +21,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Find user by email
     UserDetails findByEmail(String email);
 
-    @Query("SELECT u FROM User u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%'))")
-    List<User> searchByNameUsernameOrEmail(@Param("search") String search);
+    @Query("SELECT u FROM User u WHERE (u.username LIKE %:search% OR u.email LIKE %:search% OR u.name LIKE %:search%) AND u.active = true")
+    Page<User> searchByNameUsernameOrEmailAndActiveTrue(@Param("search") String search, Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE u.username LIKE %:search% OR u.email LIKE %:search% OR u.name LIKE %:search%")
+    Page<User> searchByNameUsernameOrEmail(@Param("search") String search, Pageable pageable);
+
     // Find all active users with pagination
     Page<User> findAllByActiveTrue(Pageable pageable);
 
