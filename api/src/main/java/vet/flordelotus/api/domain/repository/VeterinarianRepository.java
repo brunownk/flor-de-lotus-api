@@ -20,10 +20,10 @@ public interface VeterinarianRepository extends JpaRepository<Veterinarian, Long
     Page<Veterinarian> findAll(Pageable pageable);
 
     @Query("SELECT v FROM Veterinarian v " +
-            "WHERE (LOWER(v.crmv) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "WHERE LOWER(v.crmv) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(v.user.username) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(v.user.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(v.user.email) LIKE LOWER(CONCAT('%', :search, '%')))")
+            "OR LOWER(v.user.email) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Veterinarian> searchByCrmvUsernameOrEmail(@Param("search") String search, Pageable pageable);
 
     @Query("SELECT v FROM Veterinarian v WHERE v.user.active = true " +

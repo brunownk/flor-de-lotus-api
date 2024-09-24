@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import vet.flordelotus.api.domain.dto.userDTO.ChangePasswordDTO;
 import vet.flordelotus.api.enums.role.Role;
 import vet.flordelotus.api.infra.exception.ExceptionValidation;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalDetailDTO;
@@ -24,6 +25,7 @@ import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -146,5 +148,24 @@ public class UserController {
         UserDetailDTO userDetailDTO = new UserDetailDTO(user);
 
         return ResponseEntity.ok(userDetailDTO);
+    }
+
+    @PutMapping("/{id}/change-password")
+    public ResponseEntity<String> changePassword(@PathVariable Long id, @RequestBody @Valid ChangePasswordDTO changePasswordDTO) {
+        Optional<User> optionalUser = repository.findById(id);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            if (passwordEncoder.matches(changePasswordDTO.oldPassword(), user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(changePasswordDTO.newPassword()));
+                repository.save(user);
+                return ResponseEntity.ok("Password changed successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Old password incorrect");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
     }
 }

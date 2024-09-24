@@ -12,7 +12,7 @@ public record UserCreateDTO(
         String username,
 
         @NotBlank(message = "The password is required.")
-        @Size(min = 8, message = "The password must be at least 6 characters long.")
+        @Size(min = 8, message = "The password must be at least 8 characters long.")
         String password,
         @NotBlank(message = "The name is required.")
         String name,
