@@ -11,6 +11,14 @@ import java.util.List;
 
 public interface AnimalBreedRepository extends JpaRepository<AnimalBreed, Long> {
 
-    @Query("SELECT b FROM AnimalBreed b WHERE LOWER(b.name) LIKE LOWER(CONCAT('%', :search, '%'))")
-    Page<AnimalBreed> searchByName(@Param("search") String search, Pageable pageable);
+    @Query("SELECT a FROM AnimalBreed a WHERE a.deletedAt IS NULL")
+    Page<AnimalBreed> findAllActive(Pageable pageable);
+
+    @Query("SELECT a FROM AnimalBreed a WHERE a.deletedAt IS NULL AND a.name LIKE %:name%")
+    Page<AnimalBreed> searchActiveByName(@Param("name") String name, Pageable pageable);
+
+    Page<AnimalBreed> findAll(Pageable pageable);
+
+    @Query("SELECT a FROM AnimalBreed a WHERE a.name LIKE %:name%")
+    Page<AnimalBreed> searchByName(@Param("name") String name, Pageable pageable);
 }

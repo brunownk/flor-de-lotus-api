@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedCreateDTO;
 import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedDetailDTO;
@@ -20,7 +21,9 @@ import vet.flordelotus.api.domain.entity.AnimalBreed;
 import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.AnimalBreedRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,17 +49,28 @@ public class AnimalBreedController {
     public ResponseEntity<Page<AnimalBreedDetailDTO>> listAnimalBreeds(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "false") boolean withDeleted) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<AnimalBreed> breeds;
 
         if (search != null && !search.isEmpty()) {
-            // Se um termo de busca for fornecido, busca pelas raças de animais que correspondem ao termo
-            breeds = repository.searchByName(search, pageable);
+            if (withDeleted) {
+                // Se withDeleted for true, busca incluindo os inativos
+                breeds = repository.searchByName(search, pageable);
+            } else {
+                // Se withDeleted for false, busca apenas os ativos
+                breeds = repository.searchActiveByName(search, pageable);
+            }
         } else {
-            // Se não houver busca, retorna todas as raças de animais
-            breeds = repository.findAll(pageable);
+            if (withDeleted) {
+                // Retorna todos os registros, incluindo os inativos
+                breeds = repository.findAll(pageable);
+            } else {
+                // Retorna apenas os registros ativos (deletedAt == null)
+                breeds = repository.findAllActive(pageable);
+            }
         }
 
         Page<AnimalBreedDetailDTO> breedDTOs = breeds.map(AnimalBreedDetailDTO::new);
@@ -74,7 +88,9 @@ public class AnimalBreedController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity deleteAnimalBreed(@PathVariable Long id) {
-        repository.deleteById(id);
+        var animalBreed = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Animal breed not found"));
+        animalBreed.setDeletedAt(LocalDateTime.now());
+        repository.save(animalBreed);
         return ResponseEntity.noContent().build();
     }
 

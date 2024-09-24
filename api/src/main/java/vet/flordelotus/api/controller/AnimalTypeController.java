@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 import vet.flordelotus.api.domain.dto.animalTypeDTO.AnimalTypeCreateDTO;
 import vet.flordelotus.api.domain.dto.animalTypeDTO.AnimalTypeDetailDTO;
@@ -20,6 +21,7 @@ import vet.flordelotus.api.domain.entity.AnimalType;
 import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.AnimalTypeRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,23 +48,33 @@ public class AnimalTypeController {
     public ResponseEntity<Page<AnimalTypeDetailDTO>> listAnimalTypes(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "false") boolean withDeleted) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<AnimalType> types;
 
         if (search != null && !search.isEmpty()) {
-            // Se um termo de busca for fornecido, busca pelos tipos de animais que correspondem ao termo
-            types = repository.searchByName(search, pageable);
+            if (withDeleted) {
+                // Busca incluindo os inativos (onde deletedAt pode ter um valor ou ser null)
+                types = repository.searchByName(search, pageable);
+            } else {
+                // Busca apenas registros ativos (deletedAt é null)
+                types = repository.searchActiveByName(search, pageable);
+            }
         } else {
-            // Se não houver busca, retorna todos os tipos de animais
-            types = repository.findAll(pageable);
+            if (withDeleted) {
+                // Retorna todos os registros, incluindo os inativos
+                types = repository.findAll(pageable);
+            } else {
+                // Retorna apenas registros ativos (deletedAt é null)
+                types = repository.findAllActive(pageable);
+            }
         }
 
         Page<AnimalTypeDetailDTO> typeDTOs = types.map(AnimalTypeDetailDTO::new);
         return ResponseEntity.ok(typeDTOs);
     }
-
 
     @PutMapping("/{id}")
     @Transactional
@@ -75,10 +87,12 @@ public class AnimalTypeController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity deleteAnimalType(@PathVariable Long id) {
-        var animalType = repository.getReferenceById(id);
+        var animalType = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Animal type not found"));
+        animalType.setDeletedAt(LocalDateTime.now());
         repository.save(animalType);
         return ResponseEntity.noContent().build();
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity getAnimalType(@PathVariable Long id) {
