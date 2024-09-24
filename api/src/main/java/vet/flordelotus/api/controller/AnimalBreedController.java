@@ -18,8 +18,10 @@ import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedListDTO;
 import vet.flordelotus.api.domain.dto.animalBreedDTO.AnimalBreedUpdateDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserDetailDTO;
 import vet.flordelotus.api.domain.entity.AnimalBreed;
+import vet.flordelotus.api.domain.entity.AnimalType;
 import vet.flordelotus.api.domain.entity.User;
 import vet.flordelotus.api.domain.repository.AnimalBreedRepository;
+import vet.flordelotus.api.domain.repository.AnimalTypeRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,16 +35,33 @@ public class AnimalBreedController {
 
     @Autowired
     private AnimalBreedRepository repository;
+    @Autowired
+    private AnimalTypeRepository animalTypeRepository;
 
     @PostMapping
     @Transactional
-    public ResponseEntity createAnimalBreed(@RequestBody @Valid AnimalBreedCreateDTO data, UriComponentsBuilder uriBuilder) {
-        var animalBreed = new AnimalBreed(data);
-        repository.save(animalBreed);
+    public ResponseEntity<AnimalBreedDetailDTO> createAnimalBreed(@RequestBody @Valid AnimalBreedCreateDTO data, UriComponentsBuilder uriBuilder) {
+        // Verifica se o tipo de animal (animalTypeId) foi fornecido
+        if (data.animalTypeId() != null) {
+            // Busca o AnimalType pelo ID
+            AnimalType animalType = animalTypeRepository.findById(data.animalTypeId())
+                    .orElseThrow(() -> new RuntimeException("Animal type not found"));
 
-        var uri = uriBuilder.path("/animal-breeds/{id}").buildAndExpand(animalBreed.getId()).toUri();
+            // Cria uma nova instância de AnimalBreed com o AnimalType associado
+            var animalBreed = new AnimalBreed(data);
+            animalBreed.setAnimalType(animalType); // Associa o tipo de animal
 
-        return ResponseEntity.created(uri).body(new AnimalBreedDetailDTO(animalBreed));
+            // Salva a nova raça no repositório
+            repository.save(animalBreed);
+
+            // Gera a URI para o novo recurso
+            var uri = uriBuilder.path("/animal-breeds/{id}").buildAndExpand(animalBreed.getId()).toUri();
+
+            // Retorna a resposta com o novo AnimalBreed
+            return ResponseEntity.created(uri).body(new AnimalBreedDetailDTO(animalBreed));
+        }
+
+        throw new RuntimeException("Animal type ID is required."); // Tratamento para o caso de tipo não fornecido
     }
 
     @GetMapping
