@@ -27,10 +27,7 @@ public record AnimalCreateDTO(
         Long createdById,
         @NotNull(message = "The breed is required.")
 
-        AnimalBreedDTO animalBreedId,
-        @NotNull(message = "The type is required.")
-
-        AnimalTypeDTO animalTypeId
+        Long animalBreedId
 
 ) {}
 

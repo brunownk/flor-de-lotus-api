@@ -17,7 +17,9 @@ import vet.flordelotus.api.domain.dto.animalDTO.AnimalListDTO;
 import vet.flordelotus.api.domain.dto.animalDTO.AnimalUpdateDTO;
 import vet.flordelotus.api.domain.dto.userDTO.UserDetailDTO;
 import vet.flordelotus.api.domain.entity.Animal;
+import vet.flordelotus.api.domain.entity.AnimalBreed;
 import vet.flordelotus.api.domain.entity.User;
+import vet.flordelotus.api.domain.repository.AnimalBreedRepository;
 import vet.flordelotus.api.domain.repository.AnimalRepository;
 import vet.flordelotus.api.domain.repository.UserRepository;
 
@@ -33,6 +35,8 @@ public class AnimalController {
     private AnimalRepository repository;
 
     @Autowired
+    private AnimalBreedRepository animalBreedRepository;
+    @Autowired
     private UserRepository userRepository;
 
     @PostMapping
@@ -42,6 +46,15 @@ public class AnimalController {
 
         var animal = new Animal(data);
         animal.setUser(user);
+
+        if (data.animalBreedId() != null) {
+            AnimalBreed breed = animalBreedRepository.findById(data.animalBreedId())
+                    .orElseThrow(() -> new RuntimeException("Animal breed not found"));
+
+            animal.setBreed(breed);
+            animal.setType(breed.getAnimalType());
+        }
+
         repository.save(animal);
 
         var uri = uriBuilder.path("/animals/{id}").buildAndExpand(animal.getId()).toUri();

@@ -52,7 +52,7 @@ public class AnimalBreed {
 
     public AnimalBreed(AnimalBreedCreateDTO data) {
         this.name = data.name();
-        this.animalType = new AnimalType(data.animalTypeId());
+        this.animalType = getAnimalType();
         this.createdById = data.createdById();
     }
 

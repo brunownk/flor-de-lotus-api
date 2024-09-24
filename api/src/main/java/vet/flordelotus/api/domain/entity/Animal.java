@@ -71,7 +71,7 @@ public class Animal {
         this.active = true; // Mark as active by default
         this.name = data.name();
         this.user = getUser();
-        this.breed = new AnimalBreed(data.animalBreedId());
+        this.breed = getBreed();
         this.gender = data.gender();
         this.dateOfBirth = data.dateOfBirth();
         this.createdById = data.createdById();
@@ -86,11 +86,9 @@ public class Animal {
         if (data.name() != null) {
             this.name = data.name();
         }
-        if (data.breed() != null) {
-            this.breed = data.breed();
-        }
-        if (data.type() != null) {
-            this.type = data.type();
+        if (data.animalBreedId() != null) {
+            this.breed = new AnimalBreed();
+            this.breed.setId(data.animalBreedId());
         }
         if (data.gender() != null) {
             this.gender = data.gender();

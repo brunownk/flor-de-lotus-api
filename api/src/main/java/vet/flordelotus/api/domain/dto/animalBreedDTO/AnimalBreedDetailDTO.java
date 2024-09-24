@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 public record AnimalBreedDetailDTO(
         Long id,
         String name,
-        AnimalType animalType,
-
+        Long animalTypeId,
+        String animalTypeName,
         LocalDateTime createdAt,
         LocalDateTime deletedAt,
         Long createdById,
@@ -20,7 +20,8 @@ public record AnimalBreedDetailDTO(
     public AnimalBreedDetailDTO(AnimalBreed breed) {
         this(breed.getId(),
                 breed.getName(),
-                breed.getAnimalType(),
+                breed.getAnimalType().getId(),
+                breed.getAnimalType().getName(),
                 breed.getCreatedAt(),
                 breed.getDeletedAt(),
                 breed.getCreatedById(),

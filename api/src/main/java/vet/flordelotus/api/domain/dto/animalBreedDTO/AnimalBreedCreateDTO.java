@@ -12,7 +12,7 @@ public record AnimalBreedCreateDTO(
         String name,
 
         @NotNull(message = "The type ID is required.")
-        AnimalTypeDTO animalTypeId, // ID of AnimalType
+        Long animalTypeId,
 
         @NotNull(message = "The creator ID is required.")
         Long createdById

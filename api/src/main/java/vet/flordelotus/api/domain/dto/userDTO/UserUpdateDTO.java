@@ -12,9 +12,6 @@ public record UserUpdateDTO(
         @Size(min = 1, max = 100, message = "The name must be between 1 and 100 characters.")
         String username,
 
-        @Size(min = 8, message = "The password must be at least 6 characters long.")
-        String password,
-
         String name,
         @Email(message = "The email must be valid.")
         String email,

@@ -67,9 +67,6 @@ public class User implements UserDetails {
         if (data.username() != null) {
             this.username = data.username();
         }
-        if (data.password() != null) {
-            this.password = data.password();
-        }
         if (data.name() != null) {
             this.name = data.name();
         }

@@ -11,8 +11,7 @@ public record AnimalUpdateDTO(
         @NotNull(message = "The animal ID is required.")
         Long id,
         String name,
-        AnimalType type,
-        AnimalBreed breed,
+        Long animalBreedId,
         Gender gender,
         LocalDate dateOfBirth
 ) {}
