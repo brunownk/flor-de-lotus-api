@@ -74,11 +74,11 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<UserDetailDTO>> listUsers(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "false") boolean withDeleted,
             @RequestParam(required = false) String search) {
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
         Page<User> users;
 
         if (search != null && !search.isEmpty()) {

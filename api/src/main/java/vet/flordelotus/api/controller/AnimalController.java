@@ -66,10 +66,10 @@ public class AnimalController {
     public ResponseEntity<Page<AnimalDetailDTO>> listAnimals(
             @RequestParam(required = false, defaultValue = "") String search,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "false") boolean withDeleted) {
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
         Page<Animal> animals;
 
         if (search != null && !search.isEmpty()) {

@@ -51,12 +51,12 @@ public class AppointmentController {
     @GetMapping
     public ResponseEntity<Page<AppointmentDetailDTO>> listAppointments(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "false") boolean withCanceled,
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate) {
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
         Page<Appointment> appointments;
 
         if (withCanceled) {
